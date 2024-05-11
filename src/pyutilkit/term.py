@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import os
 from collections.abc import Iterable
 from enum import IntEnum, unique
+from math import ceil, floor
 from typing import Any
 
 
@@ -78,3 +80,17 @@ class SGRString(str):
 
     def __str__(self) -> str:
         return self._sgr
+
+
+def header(
+    text: str, *, padding: str = " ", left_spaces: int = 1, right_spaces: int = 1
+) -> None:
+    columns = os.get_terminal_size().columns
+    text = f"{' ' * left_spaces}{text.strip()}{' ' * right_spaces}"
+    title_length = len(text)
+    if title_length >= columns:
+        print(text.strip())
+        return
+
+    half = (columns - len(text)) / 2
+    print(f"{padding * ceil(half)}{text}{padding * floor(half)}")
