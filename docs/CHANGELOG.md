@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 -   A method to print a header spanning the whole terminal line
 -   A class to hold timings with ns resolution
 -   A metaclass for singletons
+-   A collection of date/datetime utils
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
