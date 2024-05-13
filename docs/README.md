@@ -8,7 +8,11 @@
 [![build automation: yam][yam_badge]][yam_url]
 [![Lint: ruff][ruff_badge]][ruff_url]
 
-Long project description and tldr goes here
+The Python has long maintained the philosophy of "batteries included", giving the user
+a rich standard library, avoiding the need for third party tools for most work. Some packages
+are so common, that the have a similar status to the standard library. Still, some code seems
+to be written time and again, with every project. This small library, with minimal requirements,
+hopes to stop this repetition.
 
 ## Links
 
