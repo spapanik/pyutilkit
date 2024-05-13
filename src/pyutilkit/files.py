@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import logging
 from collections.abc import Callable
 from functools import wraps
+from pathlib import Path
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
@@ -40,3 +42,13 @@ def handle_exceptions(
         return wrapper
 
     return decorator
+
+
+def hash_file(path: Path, buffer_size: int = 2**16) -> str:
+    sha256 = hashlib.sha256()
+
+    with path.open("rb") as f:
+        while data := f.read(buffer_size):
+            sha256.update(data)
+
+    return sha256.hexdigest()

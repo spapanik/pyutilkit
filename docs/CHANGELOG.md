@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Added
 
 -   A method to handle exceptions
+-   A method to hash files
 
 ### Changed
 

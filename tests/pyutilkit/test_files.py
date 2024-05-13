@@ -1,6 +1,9 @@
+import os
+from pathlib import Path
+
 import pytest
 
-from pyutilkit.files import handle_exceptions
+from pyutilkit.files import handle_exceptions, hash_file
 
 
 def test_handle_exceptions_handled_exception() -> None:
@@ -19,3 +22,8 @@ def test_handle_exceptions_unhandled_exception() -> None:
 
     assert invert(1) == 1
     pytest.raises(ZeroDivisionError, invert, 0)
+
+
+def test_hash_file() -> None:
+    dev_null_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    assert hash_file(Path(os.devnull)) == dev_null_hash
