@@ -161,6 +161,7 @@ pipdeptree = "^2.13"
 black = "^24.1"
 mypy = "^1.8"
 ruff = "^0.4"
+typing_extensions = "^4.11"
 
 [tool.poetry.group.test.dependencies]
 freezegun = "^1.5"

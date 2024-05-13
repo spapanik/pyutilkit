@@ -4,7 +4,10 @@ import os
 from collections.abc import Iterable
 from enum import IntEnum, unique
 from math import ceil, floor
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from typing_extensions import Self  # py3.10: import from typing
 
 
 @unique
@@ -60,14 +63,14 @@ class SGRCodes(IntEnum):
 
 
 class SGRString(str):
-    _sgr: str
-    __slots__ = ("_sgr",)
+    _sgr: tuple[SGRCodes, ...]
+    _string: str
+    __slots__ = ("_sgr", "_string")
 
-    def __new__(cls, value: Any, *, params: Iterable[SGRCodes] = ()) -> SGRString:
-        string = super().__new__(cls, value)
-        suffix = SGRCodes.RESET.sequence
-        prefix = "".join(param.sequence for param in params) or SGRCodes.RESET.sequence
-        object.__setattr__(string, "_sgr", f"{prefix}{value}{suffix}")
+    def __new__(cls, obj: Any, *, params: Iterable[SGRCodes] = ()) -> Self:
+        string = super().__new__(cls, obj)
+        object.__setattr__(string, "_string", str(obj))
+        object.__setattr__(string, "_sgr", tuple(params))
         return string
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -79,18 +82,35 @@ class SGRString(str):
         raise AttributeError(msg)
 
     def __str__(self) -> str:
-        return self._sgr
+        if not self._sgr:
+            return self._string
+        prefix = "".join(code.sequence for code in self._sgr)
+        return f"{prefix}{self._string}{SGRCodes.RESET.sequence}"
 
+    def __mul__(self, other: Any) -> Self:
+        if not isinstance(other, int):
+            return NotImplemented
+        return type(self)(self._string * other, params=self._sgr)
 
-def header(
-    text: str, *, padding: str = " ", left_spaces: int = 1, right_spaces: int = 1
-) -> None:
-    columns = os.get_terminal_size().columns
-    text = f"{' ' * left_spaces}{text.strip()}{' ' * right_spaces}"
-    title_length = len(text)
-    if title_length >= columns:
-        print(text.strip())
-        return
+    def __rmul__(self, other: Any) -> Self:
+        if not isinstance(other, int):
+            return NotImplemented
+        return type(self)(self._string * other, params=self._sgr)
 
-    half = (columns - len(text)) / 2
-    print(f"{padding * ceil(half)}{text}{padding * floor(half)}")
+    def header(
+        self,
+        *,
+        padding: str = " ",
+        left_spaces: int = 1,
+        right_spaces: int = 1,
+        space: str = " ",
+    ) -> None:
+        columns = os.get_terminal_size().columns
+        text = f"{space * left_spaces}{self}{space * right_spaces}"
+        title_length = left_spaces + len(self) + right_spaces
+        if title_length >= columns:
+            print(text.strip())
+            return
+
+        half = (columns - title_length) / 2
+        print(f"{padding * ceil(half)}{text}{padding * floor(half)}")

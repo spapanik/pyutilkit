@@ -15,7 +15,7 @@ def test_sgr_string_with_default() -> None:
     string = "Hello, World!"
     sgr_string = SGRString(string)
     assert repr(sgr_string) == "'Hello, World!'"
-    assert str(sgr_string) == "\x1b[0mHello, World!\x1b[0m"
+    assert str(sgr_string) == "Hello, World!"
     assert isinstance(sgr_string, str)
 
 
@@ -23,7 +23,7 @@ def test_sgr_string_set_attribute() -> None:
     string = "Hello, World!"
     sgr_string = SGRString(string, params=[SGRCodes.BOLD, SGRCodes.RED])
     with pytest.raises(AttributeError):
-        sgr_string._sgr = "Hello, World!"  # noqa: SLF001
+        sgr_string._string = "Hello, World!"  # noqa: SLF001
 
 
 def test_sgr_string_del_attribute() -> None:
