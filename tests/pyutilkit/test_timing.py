@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from time import sleep
+
 import pytest
 
-from pyutilkit.timing import Timing
+from pyutilkit.timing import Stopwatch, Timing
 
 
 @pytest.mark.parametrize(
@@ -53,3 +55,11 @@ def test_timing(timings: dict[str, int], expected_nanoseconds: int) -> None:
 )
 def test_timing_as_str(timings: dict[str, int], expected_str: str) -> None:
     assert str(Timing(**timings)) == expected_str
+
+
+def test_stopwatch() -> None:
+
+    with Stopwatch() as stopwatch:
+        sleep(0.001)
+
+    assert stopwatch.timing.nanoseconds > 1_000_000

@@ -1,4 +1,12 @@
+from __future__ import annotations  # py3.9: remove this line
+
 from dataclasses import dataclass
+from time import perf_counter_ns
+from types import TracebackType
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing_extensions import Self  # py3.10: import Self from typing
 
 
 @dataclass(frozen=True, order=True)
@@ -36,3 +44,25 @@ class Timing:
             return f"{milliseconds:.1f}ms"
         seconds = milliseconds / 1000
         return f"{seconds:,.2f}s"
+
+
+class Stopwatch:
+    _start: int
+    timing: Timing
+
+    def __init__(self) -> None:
+        self._start = 0
+        self.timing = Timing(nanoseconds=0)
+
+    def __enter__(self) -> Self:
+        self._start = perf_counter_ns()
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[Exception] | None,
+        exc_value: Exception | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        _end = perf_counter_ns()
+        self.timing = Timing(nanoseconds=_end - self._start)
