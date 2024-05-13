@@ -1,8 +1,8 @@
 from datetime import datetime, tzinfo
+from zoneinfo import ZoneInfo
 
 import pytest
 from freezegun import freeze_time
-from zoneinfo import ZoneInfo
 
 from pyutilkit import date_utils
 

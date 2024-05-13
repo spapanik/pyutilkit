@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Fixed
+
+-   Fixed python version dependency
+
 ## [0.2.0] - 2024-05-13
 
 ### Added

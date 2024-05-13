@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime, tzinfo
-
 from zoneinfo import ZoneInfo, available_timezones
 
 from pyutilkit.data.timezones import UNAVAILABLE_TIMEZONES
