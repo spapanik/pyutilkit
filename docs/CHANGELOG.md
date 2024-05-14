@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 -   Fixed python version dependency
 
+### Removed
+
+-   Removed the `__version__` from `__init__.py`
+
 ## [0.2.0] - 2024-05-13
 
 ### Added
