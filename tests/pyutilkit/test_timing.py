@@ -40,7 +40,7 @@ def test_timing(timings: dict[str, int], expected_nanoseconds: int) -> None:
         ({"nanoseconds": 1, "microseconds": 1}, "1.0µs"),
         ({"nanoseconds": 1, "milliseconds": 1}, "1.0ms"),
         ({"nanoseconds": 1, "seconds": 1}, "1.00s"),
-        ({"nanoseconds": 1, "days": 1}, "86,400.00s"),
+        ({"nanoseconds": 1, "days": 1}, "1d 00:00:00"),
         (
             {
                 "nanoseconds": 1,
@@ -49,7 +49,7 @@ def test_timing(timings: dict[str, int], expected_nanoseconds: int) -> None:
                 "milliseconds": 1,
                 "microseconds": 1,
             },
-            "86,401.00s",
+            "1d 00:00:01",
         ),
     ],
 )

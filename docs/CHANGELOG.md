@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Fixed
+
+-   Improved Timing output for timings more than 1 minute.git
+
 ## [0.3.0] - 2024-05-14
 
 ### Added

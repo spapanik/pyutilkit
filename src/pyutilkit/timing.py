@@ -43,7 +43,15 @@ class Timing:
         if milliseconds < 1000:
             return f"{milliseconds:.1f}ms"
         seconds = milliseconds / 1000
-        return f"{seconds:,.2f}s"
+        if seconds < 60:
+            return f"{seconds:.2f}s"
+        round_seconds = int(seconds)
+        minutes, seconds = divmod(round_seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        if hours < 24:
+            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        days, hours = divmod(hours, 24)
+        return f"{days:,}d {hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
 class Stopwatch:
