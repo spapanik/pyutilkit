@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ### Fixed
 
+-   Allowed stopwatch to keep track of all the laps
 -   Improved Timing output for timings more than 1 minute.git
 
 ## [0.3.0] - 2024-05-14

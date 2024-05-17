@@ -59,7 +59,14 @@ def test_timing_as_str(timings: dict[str, int], expected_str: str) -> None:
 
 def test_stopwatch() -> None:
 
-    with Stopwatch() as stopwatch:
+    stopwatch = Stopwatch()
+
+    with stopwatch:
         sleep(0.001)
 
-    assert stopwatch.timing.nanoseconds > 1_000_000
+    with stopwatch:
+        sleep(0.001)
+
+    assert len(stopwatch.laps) == 2
+    assert stopwatch.laps[0].nanoseconds > 1_000_000
+    assert stopwatch.laps[1].nanoseconds > 1_000_000

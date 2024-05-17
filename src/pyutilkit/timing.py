@@ -89,11 +89,11 @@ class Timing:
 
 class Stopwatch:
     _start: int
-    timing: Timing
+    laps: list[Timing]
 
     def __init__(self) -> None:
         self._start = 0
-        self.timing = Timing(nanoseconds=0)
+        self.laps: list[Timing] = []
 
     def __enter__(self) -> Self:
         self._start = perf_counter_ns()
@@ -106,4 +106,18 @@ class Stopwatch:
         traceback: TracebackType | None,
     ) -> None:
         _end = perf_counter_ns()
-        self.timing = Timing(nanoseconds=_end - self._start)
+        self.laps.append(Timing(nanoseconds=_end - self._start))
+
+    def __bool__(self) -> bool:
+        return bool(self.elapsed)
+
+    @property
+    def elapsed(self) -> Timing:
+        return sum(self.laps, Timing())
+
+    @property
+    def average(self) -> Timing:
+        if not self.laps:
+            msg = "No laps recorded"
+            raise ZeroDivisionError(msg)
+        return self.elapsed // len(self.laps)
