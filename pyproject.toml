@@ -126,7 +126,7 @@ skip_empty = true
 
 [tool.poetry]
 name = "pyutilkit"
-version = "0.3.0"
+version = "0.4.0"
 description = "python's missing batteries"
 authors = [
     "Stephanos Kuma <stephanos@kuma.ai>",
