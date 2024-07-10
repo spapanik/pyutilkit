@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Iterable
 from enum import IntEnum, unique
 from math import ceil, floor
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from typing_extensions import Self  # py3.10: import from typing
 
 
