@@ -2,10 +2,11 @@ from __future__ import annotations  # py3.9: remove this line
 
 from dataclasses import dataclass
 from time import perf_counter_ns
-from types import TracebackType
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from typing_extensions import Self  # py3.10: import Self from typing
 
 

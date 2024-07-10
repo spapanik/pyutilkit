@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from collections.abc import Callable
 from functools import wraps
-from pathlib import Path
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from pathlib import Path
+
     from typing_extensions import ParamSpec  # py3.9: import from typing
 
     P = ParamSpec("P")

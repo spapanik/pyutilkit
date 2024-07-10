@@ -1,29 +1,25 @@
 # Installation
 
-# Using pip
+# Using uv
 
-[pip] is a package manager for Python.
+[pip] is an extremely fast Python package installer.
 You can use it to install `pyutilkit` and try it out:
 
 ```console
-$ pip install pyutilkit
+$ uv pip install pyutilkit
 ```
 
-# Using poetry
+# Using a PEP 621 compliant build backend
 
-[poetry] is a tool for managing Python project dependencies, and is the recommended way
-to add `pyutilkit` to your project's dependencies. If you want to do so, you can do it
-with the following command:
-
-```console
-$ poetry add pyutilkit
-```
-
-Or you can add `pyutilkit` to your `pyproject.toml` file:
+[PEP 621] is the standard way to store your dependencies in a `pyproject.toml` file.
+You can add `pyutilkit` to your `pyproject.toml` file:
 
 ```toml
-[tool.poetry.dependencies]
-pyutilkit = "^0.1"
+[project]
+dependencies = [
+    "pyutilkit~=0.4",
+    ....
+]
 ```
 
 ## Python Version Requirement
@@ -32,6 +28,6 @@ Please note that `pyutilkit` requires Python 3.9 or higher. Please ensure
 that you have such a version installed in your system. If not,
 consider using a tool like [pyenv] to create a shell with the required Python version.
 
-[pip]: https://pip.pypa.io/en/stable/
-[poetry]: https://python-poetry.org/
+[uv]: https://github.com/astral-sh/uv
+[PEP 621]: https://peps.python.org/pep-0621/
 [pyenv]: https://github.com/pyenv/pyenv
