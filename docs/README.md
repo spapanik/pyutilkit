@@ -21,7 +21,7 @@ hopes to stop this repetition.
 
 [test_badge]: https://github.com/spapanik/pyutilkit/actions/workflows/tests.yml/badge.svg
 [test_url]: https://github.com/spapanik/pyutilkit/actions/workflows/tests.yml
-[licence_badge]: https://img.shields.io/badge/License-LGPL_v3-blue.svg
+[licence_badge]: https://img.shields.io/pypi/l/pyutilkit
 [licence_url]: https://github.com/spapanik/pyutilkit/blob/main/docs/LICENSE.md
 [pypi_badge]: https://img.shields.io/pypi/v/pyutilkit
 [pypi_url]: https://pypi.org/project/pyutilkit
