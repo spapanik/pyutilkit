@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 -   A method to run a subprocess, and show the real time stdout and stderr and capture it
 
+### Changed
+
+-   Changed license to BSD 3-Clause
+
 ## [0.4.0] - 2024-05-17
 
 ### Added
