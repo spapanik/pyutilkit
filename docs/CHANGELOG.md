@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Fixed
+
+-   Fixed printing issues with printing pseudo-terminals
+
 ## [0.5.0] - 2024-08-16
 
 ### Added

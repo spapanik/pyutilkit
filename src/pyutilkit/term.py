@@ -106,7 +106,13 @@ class SGRString(str):
         right_spaces: int = 1,
         space: str = " ",
     ) -> None:
-        columns = os.get_terminal_size().columns
+        try:
+            # in pseudo-terminals it throws OSError
+            terminal_size = os.get_terminal_size()
+        except OSError:
+            columns = 80
+        else:
+            columns = terminal_size.columns
         text = f"{space * left_spaces}{self}{space * right_spaces}"
         title_length = left_spaces + len(self) + right_spaces
         if title_length >= columns:
