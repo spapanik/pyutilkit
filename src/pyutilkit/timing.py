@@ -9,6 +9,12 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self  # py3.10: import Self from typing
 
+METRIC_MULTIPLIER = 1000
+SECONDS_PER_MINUTE = 60
+MINUTES_PER_HOUR = 60
+HOURS_PER_DAY = 24
+SECONDS_PER_DAY = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY
+
 
 @dataclass(frozen=True, order=True)
 class Timing:
@@ -27,31 +33,31 @@ class Timing:
     ) -> None:
         total_nanoseconds = (
             nanoseconds
-            + 1000 * microseconds
-            + 1_000_000 * milliseconds
-            + 1_000_000_000 * seconds
-            + 86_400_000_000_000 * days
+            + METRIC_MULTIPLIER * microseconds
+            + METRIC_MULTIPLIER**2 * milliseconds
+            + METRIC_MULTIPLIER**3 * seconds
+            + SECONDS_PER_DAY * METRIC_MULTIPLIER**3 * days
         )
         object.__setattr__(self, "nanoseconds", total_nanoseconds)
 
     def __str__(self) -> str:
-        if self.nanoseconds < 1000:
+        if self.nanoseconds < METRIC_MULTIPLIER:
             return f"{self.nanoseconds}ns"
-        microseconds = self.nanoseconds / 1000
-        if microseconds < 1000:
+        microseconds = self.nanoseconds / METRIC_MULTIPLIER
+        if microseconds < METRIC_MULTIPLIER:
             return f"{microseconds:.1f}µs"
-        milliseconds = microseconds / 1000
-        if milliseconds < 1000:
+        milliseconds = microseconds / METRIC_MULTIPLIER
+        if milliseconds < METRIC_MULTIPLIER:
             return f"{milliseconds:.1f}ms"
-        seconds = milliseconds / 1000
-        if seconds < 60:
+        seconds = milliseconds / METRIC_MULTIPLIER
+        if seconds < SECONDS_PER_MINUTE:
             return f"{seconds:.2f}s"
         round_seconds = int(seconds)
-        minutes, seconds = divmod(round_seconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        if hours < 24:
+        minutes, seconds = divmod(round_seconds, SECONDS_PER_MINUTE)
+        hours, minutes = divmod(minutes, MINUTES_PER_HOUR)
+        if hours < HOURS_PER_DAY:
             return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-        days, hours = divmod(hours, 24)
+        days, hours = divmod(hours, HOURS_PER_DAY)
         return f"{days:,}d {hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def __bool__(self) -> bool:
@@ -102,8 +108,8 @@ class Stopwatch:
 
     def __exit__(
         self,
-        exc_type: type[Exception] | None,
-        exc_value: Exception | None,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
         _end = perf_counter_ns()
