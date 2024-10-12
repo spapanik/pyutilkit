@@ -83,7 +83,7 @@ class SGRString(str):
         raise AttributeError(msg)
 
     def __str__(self) -> str:
-        if not self._sgr:
+        if not self._sgr or os.getenv("USE_SGR_CODES") in {"0", "false", "no"}:
             return self._string
         prefix = "".join(code.sequence for code in self._sgr)
         return f"{prefix}{self._string}{SGRCodes.RESET.sequence}"

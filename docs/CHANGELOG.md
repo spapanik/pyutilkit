@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Added
+
+-   Optionally suppress SGR codes
+
 ### Fixed
 
 -   Fixed printing issues with printing pseudo-terminals
