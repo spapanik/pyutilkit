@@ -19,6 +19,10 @@ hopes to stop this repetition.
 -   [Documentation]
 -   [Changelog]
 
+[build_badge]: https://github.com/spapanik/pyutilkit/actions/workflows/build.yml/badge.svg
+[build_url]: https://github.com/spapanik/pyutilkit/actions/workflows/build.yml
+[lint_badge]: https://github.com/spapanik/pyutilkit/actions/workflows/lint.yml/badge.svg
+[lint_url]: https://github.com/spapanik/pyutilkit/actions/workflows/lint.yml
 [test_badge]: https://github.com/spapanik/pyutilkit/actions/workflows/tests.yml/badge.svg
 [test_url]: https://github.com/spapanik/pyutilkit/actions/workflows/tests.yml
 [licence_badge]: https://img.shields.io/pypi/l/pyutilkit
