@@ -26,6 +26,9 @@ classifiers = [
 ]
 
 requires-python = ">=3.9"
+dependencies = [
+    "tzdata; os_name == 'nt'",
+]
 
 [project.urls]
 homepage = "https://pyutilkit.readthedocs.io/en/stable/"

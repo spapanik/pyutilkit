@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Fixed
+
+-   Fixed missing windows timezones
+
 ## [0.6.0] - 2024-10-12
 
 ### Added

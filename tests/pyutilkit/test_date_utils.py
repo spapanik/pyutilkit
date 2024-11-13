@@ -6,6 +6,7 @@ from freezegun import freeze_time
 
 from pyutilkit import date_utils
 
+ALL_TIMEZONES = date_utils.get_timezones()
 TEST_TIMEZONES = [ZoneInfo("UTC"), ZoneInfo("Europe/London"), ZoneInfo("Asia/Tokyo")]
 
 
@@ -20,6 +21,11 @@ def test_get_timezones() -> None:
     all_timezones = date_utils.get_timezones()
     assert "UTC" in all_timezones
     assert "Europe/Zurich" in all_timezones
+
+
+@pytest.mark.parametrize("timezone_string", ALL_TIMEZONES)
+def test_timezones_exist(timezone_string: str) -> None:
+    assert ZoneInfo(timezone_string)
 
 
 @pytest.mark.parametrize(
