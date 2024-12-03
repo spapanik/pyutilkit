@@ -1,5 +1,7 @@
 # pyutilkit: python's missing batteries
 
+[![build][build_badge]][build_url]
+[![lint][lint_badge]][lint_url]
 [![tests][test_badge]][test_url]
 [![license][licence_badge]][licence_url]
 [![pypi][pypi_badge]][pypi_url]
