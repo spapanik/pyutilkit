@@ -43,7 +43,7 @@ dev = [
 lint = [
     "black~=24.10",
     "mypy~=1.13",
-    "ruff~=0.7",
+    "ruff~=0.8",
 ]
 test = [
     "freezegun~=1.5",
