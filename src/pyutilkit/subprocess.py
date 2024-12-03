@@ -17,7 +17,9 @@ class ProcessOutput:
     elapsed: Timing
 
 
-def run_command(command: str | list[str], **kwargs: Any) -> ProcessOutput:
+def run_command(
+    command: str | list[str], **kwargs: Any  # noqa: ANN401
+) -> ProcessOutput:
     if kwargs.setdefault("stdout", PIPE) != PIPE:
         msg = "stdout must be set to PIPE"
         raise ValueError(msg)

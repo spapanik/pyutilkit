@@ -2,7 +2,7 @@ from __future__ import annotations  # py3.9: remove this line
 
 from dataclasses import dataclass
 from time import perf_counter_ns
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -63,32 +63,32 @@ class Timing:
     def __bool__(self) -> bool:
         return bool(self.nanoseconds)
 
-    def __add__(self, other: Any) -> Timing:
+    def __add__(self, other: object) -> Timing:
         if not isinstance(other, Timing):
             return NotImplemented
         return Timing(nanoseconds=self.nanoseconds + other.nanoseconds)
 
-    def __radd__(self, other: Any) -> Timing:
+    def __radd__(self, other: object) -> Timing:
         if not isinstance(other, Timing):
             return NotImplemented
         return Timing(nanoseconds=self.nanoseconds + other.nanoseconds)
 
-    def __mul__(self, other: Any) -> Timing:
+    def __mul__(self, other: object) -> Timing:
         if not isinstance(other, int):
             return NotImplemented
         return Timing(nanoseconds=self.nanoseconds * other)
 
-    def __rmul__(self, other: Any) -> Timing:
+    def __rmul__(self, other: object) -> Timing:
         if not isinstance(other, int):
             return NotImplemented
         return Timing(nanoseconds=self.nanoseconds * other)
 
-    def __floordiv__(self, other: Any) -> Timing:
+    def __floordiv__(self, other: object) -> Timing:
         if not isinstance(other, int):
             return NotImplemented
         return Timing(nanoseconds=self.nanoseconds // other)
 
-    def __truediv__(self, other: Any) -> Timing:
+    def __truediv__(self, other: object) -> Timing:
         if not isinstance(other, int):
             return NotImplemented
         return Timing(nanoseconds=self.nanoseconds // other)

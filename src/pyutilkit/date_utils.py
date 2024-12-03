@@ -9,8 +9,7 @@ UTC = ZoneInfo("UTC")
 
 
 def get_timezones() -> set[str]:
-    """
-    Get all the available timezones
+    """Get all the available timezones.
 
     This takes into accounts timezones that might not be present in
     all systems.
@@ -23,8 +22,7 @@ def now(tz_info: ZoneInfo = UTC) -> datetime:
 
 
 def from_iso(date_string: str, tz_info: tzinfo = UTC) -> datetime:
-    """
-    Get datetime from an iso string
+    """Get datetime from an iso string.
 
     This to allow the Zulu timezone, which is a valid ISO timezone.
     """
@@ -37,16 +35,13 @@ def from_iso(date_string: str, tz_info: tzinfo = UTC) -> datetime:
 
 
 def from_timestamp(timestamp: float, tz_info: tzinfo = UTC) -> datetime:
-    """
-    Get a datetime tz-aware time object from a timestamp
-    """
+    """Get a datetime tz-aware time object from a timestamp."""
     utc_dt = datetime.fromtimestamp(timestamp, tz=UTC)
     return convert_timezone(utc_dt, tz_info)
 
 
 def add_timezone(dt: datetime, tz_info: tzinfo = UTC) -> datetime:
-    """
-    Add a timezone to a naive datetime
+    """Add a timezone to a naive datetime.
 
     Raise an error in case of a tz-aware datetime
     """
@@ -57,8 +52,7 @@ def add_timezone(dt: datetime, tz_info: tzinfo = UTC) -> datetime:
 
 
 def convert_timezone(dt: datetime, tz_info: tzinfo = UTC) -> datetime:
-    """
-    Change the timezone of a tz-aware datetime
+    """Change the timezone of a tz-aware datetime.
 
     Raise an error in case of a naive datetime
     """

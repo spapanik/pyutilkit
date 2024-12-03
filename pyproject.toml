@@ -90,75 +90,22 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = [
-    "A",
-    "ANN",
-    "ARG",
-    "ASYNC",
-    "B",
-    "BLE",
-    "C4",
-    "COM",
-    "DTZ",
-    "E",
-    "EM",
-    "ERA",
-    "EXE",
-    "F",
-    "FA",
-    "FBT",
-    "FIX",
-    "FLY",
-    "FURB",
-    "G",
-    "I",
-    "ICN",
-    "INP",
-    "ISC",
-    "LOG",
-    "N",
-    "PGH",
-    "PERF",
-    "PIE",
-    "PL",
-    "PT",
-    "PTH",
-    "PYI",
-    "Q",
-    "RET",
-    "RSE",
-    "RUF",
-    "S",
-    "SIM",
-    "SLF",
-    "SLOT",
-    "T10",
-    "TCH",
-    "TD",
-    "TID",
-    "TRY",
-    "UP",
-    "W",
-    "YTT",
+    "ALL",
 ]
 ignore = [
-    "ANN101",
-    "ANN102",
-    "ANN401",
-    "COM812",
-    "E501",
-    "FIX002",
-    "PLR09",
-    "TD002",
-    "TD003",
-    "TRY003",
+    "COM812", # Avoid magic trailing commas
+    "D10",    # Not everything needs a docstring
+    "D203",   # Prefer `no-blank-line-before-class` (D211)
+    "D213",   # Prefer `multi-line-summary-first-line` (D212)
+    "E501",   # Avoid clashes with black
+    "PLR09",  # Adding a limit to complexity is too arbitrary
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = [
-    "FBT001",
-    "PLR2004",
-    "PT011",
-    "S101",
+    "FBT001",  # Test arguments are handled by pytest
+    "PLR2004", # Tests should contain magic number comparisons
+    "S101",    # Pytest needs assert statements
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]

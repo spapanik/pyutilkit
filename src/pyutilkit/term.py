@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from enum import IntEnum, unique
 from math import ceil, floor
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -68,13 +68,13 @@ class SGRString(str):
     _string: str
     __slots__ = ("_sgr", "_string")
 
-    def __new__(cls, obj: Any, *, params: Iterable[SGRCodes] = ()) -> Self:
+    def __new__(cls, obj: object, *, params: Iterable[SGRCodes] = ()) -> Self:
         string = super().__new__(cls, obj)
         object.__setattr__(string, "_string", str(obj))
         object.__setattr__(string, "_sgr", tuple(params))
         return string
 
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: object) -> None:
         msg = "SGRString is immutable"
         raise AttributeError(msg)
 
@@ -88,12 +88,12 @@ class SGRString(str):
         prefix = "".join(code.sequence for code in self._sgr)
         return f"{prefix}{self._string}{SGRCodes.RESET.sequence}"
 
-    def __mul__(self, other: Any) -> Self:
+    def __mul__(self, other: object) -> Self:
         if not isinstance(other, int):
             return NotImplemented
         return type(self)(self._string * other, params=self._sgr)
 
-    def __rmul__(self, other: Any) -> Self:
+    def __rmul__(self, other: object) -> Self:
         if not isinstance(other, int):
             return NotImplemented
         return type(self)(self._string * other, params=self._sgr)
@@ -116,8 +116,8 @@ class SGRString(str):
         text = f"{space * left_spaces}{self}{space * right_spaces}"
         title_length = left_spaces + len(self) + right_spaces
         if title_length >= columns:
-            print(text.strip())
+            print(text.strip())  # noqa: T201
             return
 
         half = (columns - title_length) / 2
-        print(f"{padding * ceil(half)}{text}{padding * floor(half)}")
+        print(f"{padding * ceil(half)}{text}{padding * floor(half)}")  # noqa: T201

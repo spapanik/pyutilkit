@@ -18,13 +18,13 @@ def test_run_command() -> None:
 
 def test_run_command_with_invalid_stdout() -> None:
     command = ["echo", "Hello, World!"]
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="stdout must be set to PIPE"):
         run_command(command, stdout=None)
 
 
 def test_run_command_with_invalid_stderr() -> None:
     command = ["echo", "Hello, World!"]
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="stderr must be set to PIPE"):
         run_command(command, stderr=None)
 
 

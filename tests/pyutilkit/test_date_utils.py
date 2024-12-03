@@ -63,7 +63,7 @@ def test_add_timezone_to_naive_datetime(tz_info: tzinfo, expected: datetime) -> 
 
 
 def test_add_timezone_to_tz_aware_datetime() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="is already tz-aware"):
         date_utils.add_timezone(datetime(2022, 1, 1, tzinfo=ZoneInfo("UTC")))
 
 
@@ -74,5 +74,5 @@ def test_convert_does_not_change_timestamp(tz_info: tzinfo) -> None:
 
 
 def test_convert_timezone_to_naive_datetime() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="is a naive datetime"):
         date_utils.convert_timezone(datetime(2022, 1, 1))  # noqa: DTZ001
