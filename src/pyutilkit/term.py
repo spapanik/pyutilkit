@@ -70,8 +70,9 @@ class SGRString(str):
 
     def __new__(cls, obj: object, *, params: Iterable[SGRCodes] = ()) -> Self:
         string = super().__new__(cls, obj)
+        params = tuple(params)
         object.__setattr__(string, "_string", str(obj))
-        object.__setattr__(string, "_sgr", tuple(params))
+        object.__setattr__(string, "_sgr", params)
         return string
 
     def __setattr__(self, name: str, value: object) -> None:

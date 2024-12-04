@@ -17,13 +17,13 @@ class ProcessOutput:
     elapsed: Timing
 
 
-def run_command(
+def run_command(  # type: ignore[misc]
     command: str | list[str], **kwargs: Any  # noqa: ANN401
 ) -> ProcessOutput:
-    if kwargs.setdefault("stdout", PIPE) != PIPE:
+    if kwargs.setdefault("stdout", PIPE) != PIPE:  # type: ignore[misc]
         msg = "stdout must be set to PIPE"
         raise ValueError(msg)
-    if kwargs.setdefault("stderr", PIPE) != PIPE:
+    if kwargs.setdefault("stderr", PIPE) != PIPE:  # type: ignore[misc]
         msg = "stderr must be set to PIPE"
         raise ValueError(msg)
 
@@ -31,15 +31,15 @@ def run_command(
     stderr = []
     stopwatch = Stopwatch()
     with stopwatch:
-        process = Popen(command, **kwargs)  # noqa: S603
+        process = Popen(command, **kwargs)  # type: ignore[misc]  # noqa: S603
 
         for line in process.stdout or []:
-            sys.stdout.buffer.write(line)
+            sys.stdout.buffer.write(line)  # type: ignore[misc]
             sys.stdout.flush()
             stdout.append(line)
 
         for line in process.stderr or []:
-            sys.stderr.buffer.write(line)
+            sys.stderr.buffer.write(line)  # type: ignore[misc]
             sys.stderr.flush()
             stderr.append(line)
 
@@ -50,6 +50,6 @@ def run_command(
         stdout=b"".join(stdout),
         stderr=b"".join(stderr),
         pid=process.pid,
-        returncode=process.returncode,
+        returncode=process.returncode,  # type: ignore[misc]
         elapsed=stopwatch.elapsed,
     )
