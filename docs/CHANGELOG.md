@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Changed
 
 -   SGRString always keeps the codes when turned to string, it can only lose them in printing outside a tty
+-   Simplified the run_command
 
 ## [0.7.0] - 2024-11-13
 

@@ -3,9 +3,12 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass
 from subprocess import PIPE, Popen
-from typing import Any
+from typing import TYPE_CHECKING
 
 from pyutilkit.timing import Stopwatch, Timing
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -17,21 +20,18 @@ class ProcessOutput:
     elapsed: Timing
 
 
-def run_command(  # type: ignore[misc]
-    command: str | list[str], **kwargs: Any  # noqa: ANN401
+def run_command(
+    command: str | list[str],
+    cwd: str | Path | None = None,
+    env: dict[str, str] | None = None,
 ) -> ProcessOutput:
-    if kwargs.setdefault("stdout", PIPE) != PIPE:  # type: ignore[misc]
-        msg = "stdout must be set to PIPE"
-        raise ValueError(msg)
-    if kwargs.setdefault("stderr", PIPE) != PIPE:  # type: ignore[misc]
-        msg = "stderr must be set to PIPE"
-        raise ValueError(msg)
-
     stdout = []
     stderr = []
     stopwatch = Stopwatch()
     with stopwatch:
-        process = Popen(command, **kwargs)  # type: ignore[misc]  # noqa: S603
+        process = Popen(  # noqa: S603
+            command, stdout=PIPE, stderr=PIPE, cwd=cwd, env=env
+        )
 
         for line in process.stdout or []:
             sys.stdout.buffer.write(line)  # type: ignore[misc]
