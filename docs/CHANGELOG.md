@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Changed
+
+-   SGRString always keeps the codes when turned to string, it can only lose them in printing outside a tty
+
 ## [0.7.0] - 2024-11-13
 
 ### Fixed
