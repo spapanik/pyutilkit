@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
+from dataclasses import dataclass
 from enum import IntEnum, unique
 from math import ceil, floor
 from typing import TYPE_CHECKING
@@ -66,36 +67,50 @@ class SGRCodes(IntEnum):
         return f"\033[{self.value}m"
 
 
-class SGRString(str):
-    _sgr: tuple[SGRCodes, ...]
+@dataclass(frozen=True, order=True)
+class SGRString:
+    __slots__ = (  # py3.9: remove this line
+        "_force_prefix",
+        "_force_sgr",
+        "_is_error",
+        "_prefix",
+        "_sgr",
+        "_string",
+        "_suffix",
+    )
+
     _string: str
+    _sgr: tuple[SGRCodes, ...]
     _prefix: str
     _suffix: str
-    __slots__ = ("_prefix", "_sgr", "_string", "_suffix")
+    _force_prefix: bool
+    _force_sgr: bool
+    _is_error: bool
 
-    def __new__(
-        cls,
+    def __init__(
+        self,
         obj: object,
         *,
         prefix: str = "",
         suffix: str = "",
         params: Iterable[SGRCodes] = (),
-    ) -> Self:
-        string = super().__new__(cls, obj)
+        force_prefix: bool = False,
+        force_sgr: bool = False,
+        is_error: bool = False,
+    ) -> None:
         params = tuple(params)
-        object.__setattr__(string, "_prefix", prefix)
-        object.__setattr__(string, "_string", str(obj))
-        object.__setattr__(string, "_sgr", params)
-        object.__setattr__(string, "_suffix", suffix)
-        return string
+        force_prefix = (
+            force_prefix or os.getenv("PY_UTIL_FORCE_PREFIX", "").lower() in TRUE_VAR
+        )
+        force_sgr = force_sgr or os.getenv("PY_UTIL_FORCE_SGR", "").lower() in TRUE_VAR
 
-    def __setattr__(self, name: str, value: object) -> None:
-        msg = "SGRString is immutable"
-        raise AttributeError(msg)
-
-    def __delattr__(self, name: str) -> None:
-        msg = "SGRString is immutable"
-        raise AttributeError(msg)
+        object.__setattr__(self, "_prefix", prefix)
+        object.__setattr__(self, "_string", str(obj))
+        object.__setattr__(self, "_sgr", params)
+        object.__setattr__(self, "_suffix", suffix)
+        object.__setattr__(self, "_force_prefix", force_prefix)
+        object.__setattr__(self, "_force_sgr", force_sgr)
+        object.__setattr__(self, "_is_error", is_error)
 
     def __str__(self) -> str:
         sgr_prefix = "".join(code.sequence for code in self._sgr)
@@ -113,6 +128,9 @@ class SGRString(str):
             prefix=self._prefix,
             suffix=self._suffix,
             params=self._sgr,
+            force_prefix=self._force_prefix,
+            force_sgr=self._force_sgr,
+            is_error=self._is_error,
         )
 
     def __rmul__(self, other: object) -> Self:
@@ -123,16 +141,12 @@ class SGRString(str):
             prefix=self._prefix,
             suffix=self._suffix,
             params=self._sgr,
+            force_prefix=self._force_prefix,
+            force_sgr=self._force_sgr,
+            is_error=self._is_error,
         )
 
-    def print(
-        self,
-        end: str = "\n",
-        *,
-        force_prefix: bool = False,
-        force_sgr: bool = False,
-        is_error: bool = False,
-    ) -> None:
+    def print(self, end: str = "\n", *, full_color: bool = False) -> None:
         """Print the command output.
 
         The command will be printed to stdout if it's not the output of an error,
@@ -141,7 +155,7 @@ class SGRString(str):
         If the output stream isn't a tty, it will strip the SGR codes and the prefix,
         unless forced to keep them.
         """
-        file = sys.stderr if is_error else sys.stdout
+        file = sys.stderr if self._is_error else sys.stdout
         if file.isatty():  # type: ignore[misc]
             prefix = self._prefix
             sgr_prefix = "".join(code.sequence for code in self._sgr)
@@ -152,15 +166,16 @@ class SGRString(str):
             sgr_prefix = ""
             sgr_suffix = ""
             suffix = ""
-            if force_sgr or os.getenv("PY_UTIL_FORCE_SGR", "").lower() in TRUE_VAR:
+            if self._force_sgr:
                 sgr_prefix = "".join(code.sequence for code in self._sgr)
                 sgr_suffix = SGRCodes.RESET.sequence if self._sgr else ""
-            if (
-                force_prefix
-                or os.getenv("PY_UTIL_FORCE_OUTFIX", "").lower() in TRUE_VAR
-            ):
+            if self._force_prefix:
                 prefix = self._prefix
                 suffix = self._suffix
+
+        if full_color:
+            prefix, sgr_prefix = sgr_prefix, prefix
+            suffix, sgr_suffix = sgr_suffix, suffix
 
         print(
             prefix,
@@ -180,23 +195,98 @@ class SGRString(str):
         left_spaces: int = 1,
         right_spaces: int = 1,
         space: str = " ",
-        force_sgr: bool = False,
-        is_error: bool = False,
     ) -> None:
         try:
             terminal_size = os.get_terminal_size()
         except OSError:
             # in pseudo-terminals an OSError is thrown
-            self.print(force_prefix=True, force_sgr=force_sgr, is_error=is_error)
+            self.print()
             return
 
         columns = terminal_size.columns
         title_length = left_spaces + len(self) + right_spaces
         if title_length >= columns:
-            self.print(is_error=is_error)
+            self.print()
             return
 
         half = (columns - title_length) / 2
         prefix = f"{padding * ceil(half)}{space * left_spaces}{self._prefix}"
         suffix = f"{self._suffix}{space * right_spaces}{padding * floor(half)}"
         type(self)(self._string, prefix=prefix, suffix=suffix, params=self._sgr).print()
+
+
+@dataclass(frozen=True, order=True)
+class SGROutput:
+    __slots__ = ("_strings",)  # py3.9: remove this line
+    _strings: tuple[SGRString, ...]
+
+    def __init__(
+        self,
+        strings: Iterable[SGRString],
+        force_prefix: bool | None = None,
+        force_sgr: bool | None = None,
+        is_error: bool | None = None,
+    ) -> None:
+        strings = tuple(
+            self._clean_string(
+                string,
+                force_prefix=force_prefix,
+                force_sgr=force_sgr,
+                is_error=is_error,
+            )
+            for string in strings
+        )
+
+        object.__setattr__(self, "_strings", strings)
+
+    @staticmethod
+    def _clean_string(
+        string: SGRString,
+        force_prefix: bool | None,
+        force_sgr: bool | None,
+        is_error: bool | None,
+    ) -> SGRString:
+        force_prefix = (
+            string._force_prefix  # noqa: SLF001
+            if force_prefix is None
+            else force_prefix
+        )
+        force_sgr = (
+            string._force_sgr if force_sgr is None else force_sgr  # noqa: SLF001
+        )
+        is_error = string._is_error if is_error is None else is_error  # noqa: SLF001
+        return SGRString(
+            string._string,  # noqa: SLF001
+            prefix=string._prefix,  # noqa: SLF001
+            suffix=string._suffix,  # noqa: SLF001
+            params=string._sgr,  # noqa: SLF001
+            force_prefix=force_prefix,
+            force_sgr=force_sgr,
+            is_error=is_error,
+        )
+
+    def print(self, sep: str = "", end: str = "\n") -> None:
+        n = len(self._strings)
+        for index, string in enumerate(self._strings, start=1):
+            current_end = end if index == n else sep
+            string.print(end=current_end)
+
+    def header(
+        self,
+        *,
+        padding: str = " ",
+        left_spaces: int = 1,
+        right_spaces: int = 1,
+        space: str = " ",
+    ) -> None:
+        n = len(self._strings)
+        if n > 1:
+            msg = "Only one string is allowed for the header"
+            raise ValueError(msg)
+
+        self._strings[0].header(
+            padding=padding,
+            left_spaces=left_spaces,
+            right_spaces=right_spaces,
+            space=space,
+        )

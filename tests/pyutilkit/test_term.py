@@ -3,44 +3,25 @@ from unittest import mock
 
 import pytest
 
-from pyutilkit.term import SGRCodes, SGRString
+from pyutilkit.term import SGRCodes, SGROutput, SGRString
 
 
 def test_sgr_string() -> None:
     string = "Hello, World!"
     sgr_string = SGRString(string, params=[SGRCodes.BOLD, SGRCodes.RED])
-    assert repr(sgr_string) == "'Hello, World!'"
     assert str(sgr_string) == "\x1b[1m\x1b[31mHello, World!\x1b[0m"
-    assert isinstance(sgr_string, str)
 
 
 def test_sgr_string_with_default() -> None:
     string = "Hello, World!"
     sgr_string = SGRString(string)
-    assert repr(sgr_string) == "'Hello, World!'"
     assert str(sgr_string) == "Hello, World!"
-    assert isinstance(sgr_string, str)
 
 
 def test_sgr_string_length() -> None:
     string = "Hello, World"
     sgr_string = SGRString(string, prefix="¡", suffix="!")
     assert len(sgr_string) == 14
-
-
-def test_sgr_string_set_attribute() -> None:
-    string = "Hello, World!"
-    sgr_string = SGRString(string, params=[SGRCodes.BOLD, SGRCodes.RED])
-    with pytest.raises(AttributeError):
-        sgr_string._string = "Hello, World!"  # noqa: SLF001
-
-
-def test_sgr_string_del_attribute() -> None:
-    string = "Hello, World!"
-    sgr_string = SGRString(string, params=[SGRCodes.BOLD, SGRCodes.RED])
-
-    with pytest.raises(AttributeError):
-        del sgr_string._sgr  # noqa: SLF001
 
 
 def test_sgr_string_multiplication() -> None:
@@ -82,3 +63,21 @@ def test_sgr_string_print(mock_print: mock.MagicMock) -> None:
         )
     ]
     assert mock_print.call_args_list == calls
+
+
+@mock.patch("pyutilkit.term.print", new_callable=mock.MagicMock(spec=print))
+@mock.patch("pyutilkit.term.sys.stdout", new=mock.MagicMock(spec=sys.stdout))
+def test_sgr_output_print(mock_print: mock.MagicMock) -> None:
+    sgr_string_1 = SGRString("Hello, World!", params=[SGRCodes.BOLD, SGRCodes.RED])
+    sgr_string_2 = SGRString("Hello, World!", params=[SGRCodes.ITALIC, SGRCodes.BLUE])
+    output = SGROutput([sgr_string_1, sgr_string_2])
+    output.print()
+    assert mock_print.call_count == 2
+
+
+def test_sgr_output_header() -> None:
+    sgr_string_1 = SGRString("Hello, World!", params=[SGRCodes.BOLD, SGRCodes.RED])
+    sgr_string_2 = SGRString("Hello, World!", params=[SGRCodes.ITALIC, SGRCodes.BLUE])
+    output = SGROutput([sgr_string_1, sgr_string_2])
+    with pytest.raises(ValueError, match="Only one string is allowed for the header"):
+        output.header()
