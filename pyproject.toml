@@ -102,6 +102,7 @@ select = [
     "ALL",
 ]
 ignore = [
+    "C901",   # Adding a limit to complexity is too arbitrary
     "COM812", # Avoid magic trailing commas
     "D10",    # Not everything needs a docstring
     "D203",   # Prefer `no-blank-line-before-class` (D211)
