@@ -156,7 +156,7 @@ class SGRString:
         unless forced to keep them.
         """
         file = sys.stderr if self._is_error else sys.stdout
-        if file.isatty():  # type: ignore[misc]
+        if file.isatty():
             prefix = self._prefix
             sgr_prefix = "".join(code.sequence for code in self._sgr)
             sgr_suffix = SGRCodes.RESET.sequence
