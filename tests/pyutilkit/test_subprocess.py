@@ -20,3 +20,13 @@ def test_run_command_with_failing() -> None:
     assert output.returncode != 0
     assert output.elapsed > Timing(nanoseconds=0)
     assert output.pid > 0
+
+
+def test_run_command_with_stderr() -> None:
+    command = ["tar", "--unrecognized-option"]
+    output = run_command(command)
+    assert output.stdout == b""
+    assert output.stderr != b""
+    assert output.returncode != 0
+    assert output.elapsed > Timing(nanoseconds=0)
+    assert output.pid > 0

@@ -41,6 +41,7 @@ def test_timing(timings: dict[str, int], expected_nanoseconds: int) -> None:
         ({"nanoseconds": 1, "milliseconds": 1}, "1.0ms"),
         ({"nanoseconds": 1, "seconds": 1}, "1.00s"),
         ({"nanoseconds": 1, "days": 1}, "1d 00:00:00"),
+        ({"seconds": 3601}, "01:00:01"),
         (
             {
                 "nanoseconds": 1,
@@ -57,9 +58,52 @@ def test_timing_as_str(timings: dict[str, int], expected_str: str) -> None:
     assert str(Timing(**timings)) == expected_str
 
 
+@pytest.mark.parametrize(
+    ("timings", "expected_bool"),
+    [
+        ({}, False),
+        ({"nanoseconds": 1}, True),
+        ({"nanoseconds": 0}, False),
+    ],
+)
+def test_timing_as_bool(timings: dict[str, int], expected_bool: bool) -> None:
+    assert bool(Timing(**timings)) is expected_bool
+
+
+def test_timing_operators() -> None:
+    timing = Timing(nanoseconds=5)
+    assert timing + timing == Timing(nanoseconds=10)
+    assert timing.__radd__(timing) == Timing(nanoseconds=10)
+    assert timing * 2 == Timing(nanoseconds=10)
+    assert 2 * timing == Timing(nanoseconds=10)
+    assert timing // 3 == Timing(nanoseconds=1)
+    assert timing / 3 == Timing(nanoseconds=2)
+
+
+def test_timing_operators_exceptions() -> None:
+    timing = Timing(nanoseconds=5)
+    with pytest.raises(TypeError):
+        "1" * timing
+    with pytest.raises(TypeError):
+        "1" + timing
+    with pytest.raises(TypeError):
+        timing * "1"
+    with pytest.raises(TypeError):
+        timing + "1"
+    with pytest.raises(TypeError):
+        timing / "1"
+    with pytest.raises(TypeError):
+        timing // "1"
+
+
 def test_stopwatch() -> None:
 
     stopwatch = Stopwatch()
+
+    with pytest.raises(ZeroDivisionError):
+        stopwatch.average  # noqa: B018
+
+    assert not stopwatch
 
     with stopwatch:
         sleep(0.001)
@@ -70,3 +114,6 @@ def test_stopwatch() -> None:
     assert len(stopwatch.laps) == 2
     assert stopwatch.laps[0].nanoseconds > 1_000_000
     assert stopwatch.laps[1].nanoseconds > 1_000_000
+    assert stopwatch.average.nanoseconds > 1_000_000
+
+    assert stopwatch
