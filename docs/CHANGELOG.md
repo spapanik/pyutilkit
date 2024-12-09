@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Changed
+
 -   SGRString is now a dataclass not a string
+
+### Fixed
+
+-   Timing \_\_truediv\_\_ doesn't perform a floor division any more
 
 ## [0.8.0] - 2024-12-05
 

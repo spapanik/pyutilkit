@@ -91,7 +91,7 @@ class Timing:
     def __truediv__(self, other: object) -> Timing:
         if not isinstance(other, int):
             return NotImplemented
-        return Timing(nanoseconds=self.nanoseconds // other)
+        return Timing(nanoseconds=round(self.nanoseconds / other))
 
 
 class Stopwatch:
