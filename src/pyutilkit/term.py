@@ -146,7 +146,7 @@ class SGRString:
             is_error=self._is_error,
         )
 
-    def print(self, end: str = "\n", *, full_color: bool = False) -> None:
+    def print(self, end: str = os.linesep, *, full_color: bool = False) -> None:
         """Print the command output.
 
         The command will be printed to stdout if it's not the output of an error,
@@ -265,7 +265,7 @@ class SGROutput:
             is_error=is_error,
         )
 
-    def print(self, sep: str = "", end: str = "\n") -> None:
+    def print(self, sep: str = "", end: str = os.linesep) -> None:
         n = len(self._strings)
         for index, string in enumerate(self._strings, start=1):
             current_end = end if index == n else sep

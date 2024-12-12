@@ -1,3 +1,4 @@
+import os
 import sys
 from unittest import mock
 
@@ -62,7 +63,7 @@ def test_sgr_string_print(mock_print: mock.MagicMock) -> None:
             "\x1b[0m",
             "x",
             sep="",
-            end="\n",
+            end=os.linesep,
             file=sys.stdout,
         )
     ]
@@ -86,7 +87,7 @@ def test_sgr_string_print_full_color(mock_print: mock.MagicMock) -> None:
             "x",
             "\x1b[0m",
             sep="",
-            end="\n",
+            end=os.linesep,
             file=sys.stdout,
         )
     ]
@@ -119,7 +120,7 @@ def test_sgr_output_print(mock_print: mock.MagicMock) -> None:
             "\x1b[0m",
             "",
             sep="",
-            end="\n",
+            end=os.linesep,
             file=sys.stdout,
         ),
     ]
