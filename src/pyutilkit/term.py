@@ -159,7 +159,7 @@ class SGRString:
         if file.isatty():
             prefix = self._prefix
             sgr_prefix = "".join(code.sequence for code in self._sgr)
-            sgr_suffix = SGRCodes.RESET.sequence
+            sgr_suffix = SGRCodes.RESET.sequence if self._sgr else ""
             suffix = self._suffix
         else:
             prefix = ""

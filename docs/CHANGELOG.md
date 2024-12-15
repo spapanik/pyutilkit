@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Fixed
 
 -   Change the default line separator to an OS agnostic one
+-   Removed extra reset SGR code
 
 ## [0.9.0] - 2024-12-09
 
