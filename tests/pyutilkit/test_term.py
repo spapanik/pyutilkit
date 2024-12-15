@@ -1,5 +1,4 @@
 import os
-import sys
 from unittest import mock
 
 import pytest
@@ -46,94 +45,77 @@ def test_sgr_string_right_multiplication() -> None:
         "1" * sgr_string
 
 
-@mock.patch("pyutilkit.term.print", new_callable=mock.MagicMock(spec=print))
-@mock.patch("pyutilkit.term.sys.stdout", new=mock.MagicMock(spec=sys.stdout))
-def test_sgr_string_print(mock_print: mock.MagicMock) -> None:
+@pytest.mark.parametrize(
+    ("force_sgr", "force_prefix", "is_error", "expected_stdout", "excepted_stderr"),
+    [
+        (False, False, False, f"*{os.linesep}", ""),
+        (True, False, False, f"\x1b[1m\x1b[31m*\x1b[0m{os.linesep}", ""),
+        (False, True, False, f"x*x{os.linesep}", ""),
+        (True, True, False, f"x\x1b[1m\x1b[31m*\x1b[0mx{os.linesep}", ""),
+        (False, False, True, "", f"*{os.linesep}"),
+        (True, False, True, "", f"\x1b[1m\x1b[31m*\x1b[0m{os.linesep}"),
+        (False, True, True, "", f"x*x{os.linesep}"),
+        (True, True, True, "", f"x\x1b[1m\x1b[31m*\x1b[0mx{os.linesep}"),
+    ],
+)
+def test_sgr_string_print(
+    force_sgr: bool,
+    force_prefix: bool,
+    is_error: bool,
+    expected_stdout: str,
+    excepted_stderr: str,
+    capsys: mock.MagicMock,
+) -> None:
     sgr_string = SGRString(
-        "*", params=[SGRCodes.BOLD, SGRCodes.RED], prefix="x", suffix="x"
+        "*",
+        params=[SGRCodes.BOLD, SGRCodes.RED],
+        prefix="x",
+        suffix="x",
+        force_sgr=force_sgr,
+        force_prefix=force_prefix,
+        is_error=is_error,
     )
     sgr_string.print()
-    assert mock_print.call_count == 1
-
-    calls = [
-        mock.call(
-            "x",
-            "\x1b[1m\x1b[31m",
-            "*",
-            "\x1b[0m",
-            "x",
-            sep="",
-            end=os.linesep,
-            file=sys.stdout,
-        )
-    ]
-    assert mock_print.call_args_list == calls
+    captured = capsys.readouterr()
+    assert captured.out == expected_stdout
+    assert captured.err == excepted_stderr
 
 
-@mock.patch("pyutilkit.term.print", new_callable=mock.MagicMock(spec=print))
-@mock.patch("pyutilkit.term.sys.stdout", new=mock.MagicMock(spec=sys.stdout))
-def test_sgr_string_print_full_color(mock_print: mock.MagicMock) -> None:
+def test_sgr_string_print_full_color(capsys: mock.MagicMock) -> None:
     sgr_string = SGRString(
-        "*", params=[SGRCodes.BOLD, SGRCodes.RED], prefix="x", suffix="x"
+        "*",
+        params=[SGRCodes.BOLD, SGRCodes.RED],
+        prefix="x",
+        suffix="x",
+        force_sgr=True,
+        force_prefix=True,
     )
     sgr_string.print(full_color=True)
-    assert mock_print.call_count == 1
-
-    calls = [
-        mock.call(
-            "\x1b[1m\x1b[31m",
-            "x",
-            "*",
-            "x",
-            "\x1b[0m",
-            sep="",
-            end=os.linesep,
-            file=sys.stdout,
-        )
-    ]
-    assert mock_print.call_args_list == calls
+    captured = capsys.readouterr()
+    assert captured.out == f"\x1b[1m\x1b[31mx*x\x1b[0m{os.linesep}"
+    assert captured.err == ""
 
 
-@mock.patch("pyutilkit.term.print", new_callable=mock.MagicMock(spec=print))
-@mock.patch("pyutilkit.term.sys.stdout", new=mock.MagicMock(spec=sys.stdout))
-def test_sgr_output_print(mock_print: mock.MagicMock) -> None:
+def test_sgr_output_print(capsys: mock.MagicMock) -> None:
     sgr_string_1 = SGRString("Hello, World!", params=[SGRCodes.BOLD, SGRCodes.RED])
     sgr_string_2 = SGRString("Hello, World!", params=[SGRCodes.ITALIC, SGRCodes.BLUE])
-    output = SGROutput([sgr_string_1, sgr_string_2])
+    output = SGROutput([sgr_string_1, sgr_string_2], force_sgr=True, force_prefix=True)
     output.print()
-    assert mock_print.call_count == 2
-    calls = [
-        mock.call(
-            "",
-            "\x1b[1m\x1b[31m",
-            "Hello, World!",
-            "\x1b[0m",
-            "",
-            sep="",
-            end="",
-            file=sys.stdout,
-        ),
-        mock.call(
-            "",
-            "\x1b[3m\x1b[34m",
-            "Hello, World!",
-            "\x1b[0m",
-            "",
-            sep="",
-            end=os.linesep,
-            file=sys.stdout,
-        ),
-    ]
-    assert mock_print.call_args_list == calls
+    captured = capsys.readouterr()
+    assert (
+        captured.out
+        == f"\x1b[1m\x1b[31mHello, World!\x1b[0m\x1b[3m\x1b[34mHello, World!\x1b[0m{os.linesep}"
+    )
+    assert captured.err == ""
 
 
-@mock.patch("pyutilkit.term.print", new_callable=mock.MagicMock(spec=print))
-@mock.patch("pyutilkit.term.sys.stdout", new=mock.MagicMock(spec=sys.stdout))
-def test_sgr_output_header(mock_print: mock.MagicMock) -> None:
+def test_sgr_output_header(capsys: mock.MagicMock) -> None:
     sgr_string_1 = SGRString("Hello, World!", params=[SGRCodes.BOLD, SGRCodes.RED])
     output = SGROutput([sgr_string_1])
     output.header()
-    assert mock_print.call_count == 1
+    captured = capsys.readouterr()
+    assert captured.out == f"Hello, World!{os.linesep}"
+    assert captured.err == ""
 
 
 def test_sgr_output_header_multi_string() -> None:
@@ -144,15 +126,9 @@ def test_sgr_output_header_multi_string() -> None:
         output.header()
 
 
-@mock.patch("pyutilkit.term.print", new_callable=mock.MagicMock(spec=print))
-def test_sgr_output_print_objects(mock_print: mock.MagicMock) -> None:
+def test_sgr_output_print_objects(capsys: mock.MagicMock) -> None:
     output = SGROutput([1, None])
     output.print()
-    assert mock_print.call_count == 2
-    calls = [
-        mock.call("", "", "1", "\x1b[0m", "", sep="", end="", file=sys.stdout),
-        mock.call(
-            "", "", "None", "\x1b[0m", "", sep="", end=os.linesep, file=sys.stdout
-        ),
-    ]
-    assert mock_print.call_args_list == calls
+    captured = capsys.readouterr()
+    assert captured.out == f"1None{os.linesep}"
+    assert captured.err == ""
