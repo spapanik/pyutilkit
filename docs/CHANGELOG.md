@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Added
+
+-   Allow passing any object to SGROutput
+
 ### Fixed
 
 -   Change the default line separator to an OS agnostic one

@@ -222,7 +222,7 @@ class SGROutput:
 
     def __init__(
         self,
-        strings: Iterable[SGRString],
+        strings: Iterable[object],
         force_prefix: bool | None = None,
         force_sgr: bool | None = None,
         is_error: bool | None = None,
@@ -241,11 +241,13 @@ class SGROutput:
 
     @staticmethod
     def _clean_string(
-        string: SGRString,
+        string: object,
         force_prefix: bool | None,
         force_sgr: bool | None,
         is_error: bool | None,
     ) -> SGRString:
+        if not isinstance(string, SGRString):
+            string = SGRString(string)
         force_prefix = (
             string._force_prefix  # noqa: SLF001
             if force_prefix is None

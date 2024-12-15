@@ -142,3 +142,17 @@ def test_sgr_output_header_multi_string() -> None:
     output = SGROutput([sgr_string_1, sgr_string_2])
     with pytest.raises(ValueError, match="Only one string is allowed for the header"):
         output.header()
+
+
+@mock.patch("pyutilkit.term.print", new_callable=mock.MagicMock(spec=print))
+def test_sgr_output_print_objects(mock_print: mock.MagicMock) -> None:
+    output = SGROutput([1, None])
+    output.print()
+    assert mock_print.call_count == 2
+    calls = [
+        mock.call("", "", "1", "\x1b[0m", "", sep="", end="", file=sys.stdout),
+        mock.call(
+            "", "", "None", "\x1b[0m", "", sep="", end=os.linesep, file=sys.stdout
+        ),
+    ]
+    assert mock_print.call_args_list == calls
