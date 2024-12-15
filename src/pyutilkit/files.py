@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
 
-    from typing_extensions import ParamSpec  # py3.9: import from typing
+    from typing_extensions import ParamSpec  # upgrade: py3.9: import from typing
 
     P = ParamSpec("P")
 

@@ -1,4 +1,4 @@
-from __future__ import annotations  # py3.9: remove this line
+from __future__ import annotations
 
 from dataclasses import dataclass
 from time import perf_counter_ns
@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from types import TracebackType
 
-    from typing_extensions import Self  # py3.10: import Self from typing
+    from typing_extensions import Self  # upgrade: py3.10: import from typing
 
 METRIC_MULTIPLIER = 1000
 SECONDS_PER_MINUTE = 60
@@ -18,7 +18,7 @@ SECONDS_PER_DAY = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY
 
 @dataclass(frozen=True, order=True)
 class Timing:
-    __slots__ = ("nanoseconds",)  # py3.9: remove this line
+    __slots__ = ("nanoseconds",)  # upgrade: py3.9: use __slots__ = True
 
     nanoseconds: int
 

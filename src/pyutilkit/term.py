@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from typing_extensions import Self  # py3.10: import from typing
+    from typing_extensions import Self  # upgrade: py3.10: import from typing
 
 TRUE_VAR = {"0", "false", "no"}
 
@@ -69,7 +69,7 @@ class SGRCodes(IntEnum):
 
 @dataclass(frozen=True, order=True)
 class SGRString:
-    __slots__ = (  # py3.9: remove this line
+    __slots__ = (  # upgrade: py3.9: use __slots__ = True
         "_force_prefix",
         "_force_sgr",
         "_is_error",
@@ -217,7 +217,7 @@ class SGRString:
 
 @dataclass(frozen=True, order=True)
 class SGROutput:
-    __slots__ = ("_strings",)  # py3.9: remove this line
+    __slots__ = ("_strings",)  # upgrade: py3.9: use __slots__ = True
     _strings: tuple[SGRString, ...]
 
     def __init__(
