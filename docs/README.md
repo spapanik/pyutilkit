@@ -4,6 +4,8 @@
 [![lint][lint_badge]][lint_url]
 [![tests][test_badge]][test_url]
 [![license][licence_badge]][licence_url]
+[![codecov][codecov_badge]][codecov_url]
+[![readthedocs][readthedocs_badge]][readthedocs_url]
 [![pypi][pypi_badge]][pypi_url]
 [![downloads][pepy_badge]][pepy_url]
 [![code style: black][black_badge]][black_url]
@@ -29,6 +31,10 @@ hopes to stop this repetition.
 [test_url]: https://github.com/spapanik/pyutilkit/actions/workflows/tests.yml
 [licence_badge]: https://img.shields.io/pypi/l/pyutilkit
 [licence_url]: https://pyutilkit.readthedocs.io/en/stable/LICENSE/
+[codecov_badge]: https://codecov.io/github/spapanik/pyutilkit/graph/badge.svg?token=Q20F84BW72
+[codecov_url]: https://codecov.io/github/spapanik/pyutilkit
+[readthedocs_badge]: https://readthedocs.org/projects/pyutilkit/badge/?version=latest
+[readthedocs_url]: https://pyutilkit.readthedocs.io/en/latest/
 [pypi_badge]: https://img.shields.io/pypi/v/pyutilkit
 [pypi_url]: https://pypi.org/project/pyutilkit
 [pepy_badge]: https://pepy.tech/badge/pyutilkit
