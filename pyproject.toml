@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "phosphorus>=0.8",
+    "phosphorus>=0.10",
 ]
 build-backend = "phosphorus.construction.api"
 
@@ -35,20 +35,27 @@ homepage = "https://pyutilkit.readthedocs.io/en/stable/"
 repository = "https://github.com/spapanik/pyutilkit"
 documentation = "https://pyutilkit.readthedocs.io/en/stable/"
 
-[tool.phosphorus.dev-dependencies]
+[dependency-groups]
 dev = [
     "ipdb~=0.13",
     "ipython~=8.18",
+    { include-group = "lint" },
+    { include-group = "test" },
+    { include-group = "docs" },
 ]
 lint = [
     "black~=24.10",
-    "mypy~=1.13",
+    "mypy~=1.14",
     "ruff~=0.8",
+    { include-group = "test_core" },
 ]
 test = [
+    "pytest-cov~=6.0",
+    { include-group = "test_core" },
+]
+test_core = [
     "freezegun~=1.5",
     "pytest~=8.3",
-    "pytest-cov~=6.0",
 ]
 docs = [
     "mkdocs~=1.6",
@@ -142,6 +149,9 @@ source = [
     "src/",
 ]
 data_file = ".cov_cache/coverage.dat"
+omit = [
+    "src/pyutilkit/lib/type_defs.py",
+]
 
 [tool.coverage.report]
 exclude_also = [
