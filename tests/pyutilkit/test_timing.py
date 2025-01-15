@@ -85,11 +85,11 @@ def test_timing_operators_exceptions() -> None:
     with pytest.raises(TypeError):
         "1" * timing
     with pytest.raises(TypeError):
-        "1" + timing
+        1 + timing
     with pytest.raises(TypeError):
         timing * "1"
     with pytest.raises(TypeError):
-        timing + "1"
+        timing + 1
     with pytest.raises(TypeError):
         timing / "1"
     with pytest.raises(TypeError):
