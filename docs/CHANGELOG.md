@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Added
 
 -   Added subtraction and negation to timing
+-   Added iter, min, max, len for Stopwatch instances.
 
 ## [0.10.0] - 2024-12-09
 

@@ -5,6 +5,7 @@ from time import perf_counter_ns
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from types import TracebackType
 
     from typing_extensions import Self  # upgrade: py3.10: import from typing
@@ -114,10 +115,11 @@ class Timing:
 class Stopwatch:
     _start: int
     laps: list[Timing]
+    __slots__ = ("_start", "_zero", "laps")
 
     def __init__(self) -> None:
-        self._start = 0
         self.laps: list[Timing] = []
+        self._zero = Timing()
 
     def __enter__(self) -> Self:
         self._start = perf_counter_ns()
@@ -129,19 +131,34 @@ class Stopwatch:
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
-        _end = perf_counter_ns()
-        self.laps.append(Timing(nanoseconds=_end - self._start))
+        end = perf_counter_ns()
+        self.laps.append(Timing(nanoseconds=end - self._start))
+        del self._start
 
     def __bool__(self) -> bool:
         return bool(self.elapsed)
 
+    def __len__(self) -> int:
+        return len(self.laps)
+
+    def __iter__(self) -> Iterator[Timing]:
+        return iter(self.laps)
+
     @property
     def elapsed(self) -> Timing:
-        return sum(self.laps, Timing())
+        return sum(self.laps, self._zero)
 
     @property
     def average(self) -> Timing:
         if not self.laps:
             msg = "No laps recorded"
             raise ZeroDivisionError(msg)
-        return self.elapsed // len(self.laps)
+        return self.elapsed // len(self)
+
+    @property
+    def min(self) -> Timing:
+        return min(self.laps)
+
+    @property
+    def max(self) -> Timing:
+        return max(self.laps)

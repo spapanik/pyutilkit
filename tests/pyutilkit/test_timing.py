@@ -109,7 +109,6 @@ def test_timing_operators_exceptions() -> None:
 
 
 def test_stopwatch() -> None:
-
     stopwatch = Stopwatch()
 
     with pytest.raises(ZeroDivisionError):
@@ -123,9 +122,11 @@ def test_stopwatch() -> None:
     with stopwatch:
         sleep(0.001)
 
-    assert len(stopwatch.laps) == 2
+    assert len(stopwatch) == len(stopwatch.laps) == 2
     assert stopwatch.laps[0].nanoseconds > 1_000_000
     assert stopwatch.laps[1].nanoseconds > 1_000_000
     assert stopwatch.average.nanoseconds > 1_000_000
+    assert stopwatch.min <= stopwatch.average <= stopwatch.max
 
+    assert list(stopwatch) == stopwatch.laps
     assert stopwatch
