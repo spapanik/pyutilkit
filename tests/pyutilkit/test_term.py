@@ -1,9 +1,15 @@
 import os
+from typing import NamedTuple
 from unittest import mock
 
 import pytest
 
 from pyutilkit.term import SGRCodes, SGROutput, SGRString
+
+
+class TerminalSize(NamedTuple):
+    columns: int
+    lines: int
 
 
 def test_sgr_string() -> None:
@@ -109,10 +115,38 @@ def test_sgr_output_print(capsys: mock.MagicMock) -> None:
     assert captured.err == ""
 
 
+@mock.patch("sys.stdout.isatty", new=mock.MagicMock(return_value=True))
+def test_sgr_output_print_when_stdout_is_a_tty(capsys: mock.MagicMock) -> None:
+    sgr_string_1 = SGRString("Hello, World!", params=[SGRCodes.BOLD, SGRCodes.RED])
+    sgr_string_2 = SGRString("Hello, World!", params=[SGRCodes.ITALIC, SGRCodes.BLUE])
+    output = SGROutput([sgr_string_1, sgr_string_2])
+    output.print()
+    captured = capsys.readouterr()
+    assert (
+        captured.out
+        == f"\x1b[1m\x1b[31mHello, World!\x1b[0m\x1b[3m\x1b[34mHello, World!\x1b[0m{os.linesep}"
+    )
+    assert captured.err == ""
+
+
 def test_sgr_output_header(capsys: mock.MagicMock) -> None:
     sgr_string_1 = SGRString("Hello, World!", params=[SGRCodes.BOLD, SGRCodes.RED])
     output = SGROutput([sgr_string_1])
     output.header()
+    captured = capsys.readouterr()
+    assert captured.out == f"Hello, World!{os.linesep}"
+    assert captured.err == ""
+
+
+@pytest.mark.parametrize("columns", [80, 5])
+def test_sgr_output_header_with_a_tty(columns: int, capsys: mock.MagicMock) -> None:
+    sgr_string_1 = SGRString("Hello, World!", params=[SGRCodes.BOLD, SGRCodes.RED])
+    output = SGROutput([sgr_string_1])
+    with mock.patch(
+        "os.get_terminal_size",
+        new=mock.MagicMock(return_value=TerminalSize(columns, 24)),
+    ):
+        output.header()
     captured = capsys.readouterr()
     assert captured.out == f"Hello, World!{os.linesep}"
     assert captured.err == ""
