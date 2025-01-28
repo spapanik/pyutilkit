@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Added
+
+-   Added subtraction and negation to timing
+
 ## [0.10.0] - 2024-12-09
 
 ### Added

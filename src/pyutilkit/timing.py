@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self  # upgrade: py3.10: import from typing
 
-METRIC_MULTIPLIER = 1000
+METRIC_MULTIPLIER = 1_000
 SECONDS_PER_MINUTE = 60
 MINUTES_PER_HOUR = 60
 HOURS_PER_DAY = 24
@@ -41,27 +41,34 @@ class Timing:
         object.__setattr__(self, "nanoseconds", total_nanoseconds)
 
     def __str__(self) -> str:
-        if self.nanoseconds < METRIC_MULTIPLIER:
-            return f"{self.nanoseconds}ns"
-        microseconds = self.nanoseconds / METRIC_MULTIPLIER
+        if self.nanoseconds == 0:
+            return "0ns"
+        sign = "" if self.nanoseconds > 0 else "-"
+        nanoseconds = abs(self.nanoseconds)
+        if nanoseconds < METRIC_MULTIPLIER:
+            return f"{sign}{nanoseconds}ns"
+        microseconds = nanoseconds / METRIC_MULTIPLIER
         if microseconds < METRIC_MULTIPLIER:
-            return f"{microseconds:.1f}µs"
+            return f"{sign}{microseconds:.1f}µs"
         milliseconds = microseconds / METRIC_MULTIPLIER
         if milliseconds < METRIC_MULTIPLIER:
-            return f"{milliseconds:.1f}ms"
+            return f"{sign}{milliseconds:.1f}ms"
         seconds = milliseconds / METRIC_MULTIPLIER
         if seconds < SECONDS_PER_MINUTE:
-            return f"{seconds:.2f}s"
+            return f"{sign}{seconds:.2f}s"
         round_seconds = int(seconds)
         minutes, seconds = divmod(round_seconds, SECONDS_PER_MINUTE)
         hours, minutes = divmod(minutes, MINUTES_PER_HOUR)
         if hours < HOURS_PER_DAY:
-            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+            return f"{sign}{hours:02d}:{minutes:02d}:{seconds:02d}"
         days, hours = divmod(hours, HOURS_PER_DAY)
-        return f"{days:,}d {hours:02d}:{minutes:02d}:{seconds:02d}"
+        return f"{sign}{days:,}d {hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def __bool__(self) -> bool:
         return bool(self.nanoseconds)
+
+    def __neg__(self) -> Self:
+        return self.__class__(nanoseconds=-self.nanoseconds)
 
     def __add__(self, other: object) -> Timing:
         if not isinstance(other, Timing):
@@ -72,6 +79,16 @@ class Timing:
         if not isinstance(other, Timing):
             return NotImplemented
         return Timing(nanoseconds=self.nanoseconds + other.nanoseconds)
+
+    def __sub__(self, other: object) -> Timing:
+        if not isinstance(other, Timing):
+            return NotImplemented
+        return Timing(nanoseconds=self.nanoseconds - other.nanoseconds)
+
+    def __rsub__(self, other: object) -> Timing:
+        if not isinstance(other, Timing):
+            return NotImplemented
+        return Timing(nanoseconds=other.nanoseconds - self.nanoseconds)
 
     def __mul__(self, other: object) -> Timing:
         if not isinstance(other, int):

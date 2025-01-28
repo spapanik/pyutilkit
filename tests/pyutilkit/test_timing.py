@@ -37,6 +37,7 @@ def test_timing(timings: dict[str, int], expected_nanoseconds: int) -> None:
     [
         ({}, "0ns"),
         ({"nanoseconds": 1}, "1ns"),
+        ({"nanoseconds": -1}, "-1ns"),
         ({"nanoseconds": 1, "microseconds": 1}, "1.0µs"),
         ({"nanoseconds": 1, "milliseconds": 1}, "1.0ms"),
         ({"nanoseconds": 1, "seconds": 1}, "1.00s"),
@@ -58,6 +59,11 @@ def test_timing_as_str(timings: dict[str, int], expected_str: str) -> None:
     assert str(Timing(**timings)) == expected_str
 
 
+def test_negative_timing() -> None:
+    timing = -Timing(nanoseconds=5)
+    assert timing.nanoseconds == -5
+
+
 @pytest.mark.parametrize(
     ("timings", "expected_bool"),
     [
@@ -73,7 +79,9 @@ def test_timing_as_bool(timings: dict[str, int], expected_bool: bool) -> None:
 def test_timing_operators() -> None:
     timing = Timing(nanoseconds=5)
     assert timing + timing == Timing(nanoseconds=10)
+    assert timing - timing == Timing(nanoseconds=0)
     assert timing.__radd__(timing) == Timing(nanoseconds=10)
+    assert timing.__rsub__(timing) == Timing(nanoseconds=0)
     assert timing * 2 == Timing(nanoseconds=10)
     assert 2 * timing == Timing(nanoseconds=10)
     assert timing // 3 == Timing(nanoseconds=1)
@@ -87,9 +95,13 @@ def test_timing_operators_exceptions() -> None:
     with pytest.raises(TypeError):
         1 + timing
     with pytest.raises(TypeError):
+        1 - timing
+    with pytest.raises(TypeError):
         timing * "1"
     with pytest.raises(TypeError):
         timing + 1
+    with pytest.raises(TypeError):
+        timing - 1
     with pytest.raises(TypeError):
         timing / "1"
     with pytest.raises(TypeError):
