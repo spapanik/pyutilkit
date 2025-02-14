@@ -108,10 +108,14 @@ def test_sgr_output_print(capsys: mock.MagicMock) -> None:
     output = SGROutput([sgr_string_1, sgr_string_2], force_sgr=True, force_prefix=True)
     output.print()
     captured = capsys.readouterr()
-    assert (
-        captured.out
-        == f"\x1b[1m\x1b[31mHello, World!\x1b[0m\x1b[3m\x1b[34mHello, World!\x1b[0m{os.linesep}"
+    expected = (
+        "\x1b[1m\x1b[31m"
+        "Hello, World!"
+        "\x1b[0m\x1b[3m\x1b[34m"
+        "Hello, World!"
+        f"\x1b[0m{os.linesep}"
     )
+    assert captured.out == expected
     assert captured.err == ""
 
 
@@ -122,10 +126,14 @@ def test_sgr_output_print_when_stdout_is_a_tty(capsys: mock.MagicMock) -> None:
     output = SGROutput([sgr_string_1, sgr_string_2])
     output.print()
     captured = capsys.readouterr()
-    assert (
-        captured.out
-        == f"\x1b[1m\x1b[31mHello, World!\x1b[0m\x1b[3m\x1b[34mHello, World!\x1b[0m{os.linesep}"
+    expected = (
+        "\x1b[1m\x1b[31m"
+        "Hello, World!"
+        "\x1b[0m\x1b[3m\x1b[34m"
+        "Hello, World!"
+        f"\x1b[0m{os.linesep}"
     )
+    assert captured.out == expected
     assert captured.err == ""
 
 
