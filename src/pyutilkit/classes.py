@@ -15,4 +15,4 @@ class Singleton(type):
     def __call__(cls) -> type[Singleton]:
         if cls.instance is None:
             cls.instance = super().__call__()
-        return cast(type[Singleton], cls.instance)
+        return cast("type[Singleton]", cls.instance)
