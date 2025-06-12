@@ -67,18 +67,8 @@ class SGRCodes(IntEnum):
         return f"\033[{self.value}m"
 
 
-@dataclass(frozen=True, order=True)
+@dataclass(frozen=True, order=True, slots=True)
 class SGRString:
-    __slots__ = (  # upgrade: py3.9: use __slots__ = True
-        "_force_prefix",
-        "_force_sgr",
-        "_is_error",
-        "_prefix",
-        "_sgr",
-        "_string",
-        "_suffix",
-    )
-
     _string: str
     _sgr: tuple[SGRCodes, ...]
     _prefix: str
@@ -215,9 +205,8 @@ class SGRString:
         type(self)(self._string, prefix=prefix, suffix=suffix, params=self._sgr).print()
 
 
-@dataclass(frozen=True, order=True)
+@dataclass(frozen=True, order=True, slots=True)
 class SGROutput:
-    __slots__ = ("_strings",)  # upgrade: py3.9: use __slots__ = True
     _strings: tuple[SGRString, ...]
 
     def __init__(

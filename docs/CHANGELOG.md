@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 -   Added subtraction and negation to timing
 -   Added iter, min, max, len for Stopwatch instances.
 
+### Changed
+
+-   Dropped support for python 3.9
+
 ## [0.10.0] - 2024-12-09
 
 ### Added
