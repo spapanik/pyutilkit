@@ -17,10 +17,8 @@ HOURS_PER_DAY = 24
 SECONDS_PER_DAY = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY
 
 
-@dataclass(frozen=True, order=True)
+@dataclass(frozen=True, order=True, slots=True)
 class Timing:
-    __slots__ = ("nanoseconds",)  # upgrade: py3.9: use __slots__ = True
-
     nanoseconds: int
 
     def __init__(

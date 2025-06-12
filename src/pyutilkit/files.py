@@ -3,19 +3,16 @@ from __future__ import annotations
 import hashlib
 import logging
 from functools import wraps
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, ParamSpec, TypeVar
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
 
-    from typing_extensions import ParamSpec  # upgrade: py3.9: import from typing
-
-    P = ParamSpec("P")
-
 logger = logging.getLogger(__name__)
 INGEST_ERROR = "Function `%s` threw `%s` when called with args=%s and kwargs=%s"
 R_co = TypeVar("R_co", covariant=True)
+P = ParamSpec("P")
 
 
 def handle_exceptions(
