@@ -115,7 +115,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - A metaclass for singletons
 - A collection of date/datetime utils
 
-[Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
+[Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [Unreleased]: https://github.com/spapanik/pyutilkit/compare/v0.10.0...main
 [0.10.0]: https://github.com/spapanik/pyutilkit/compare/v0.9.0...v0.10.0
