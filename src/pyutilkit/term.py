@@ -212,6 +212,7 @@ class SGROutput:
     def __init__(
         self,
         strings: Iterable[object],
+        *,
         force_prefix: bool | None = None,
         force_sgr: bool | None = None,
         is_error: bool | None = None,
@@ -231,6 +232,7 @@ class SGROutput:
     @staticmethod
     def _clean_string(
         string: object,
+        *,
         force_prefix: bool | None,
         force_sgr: bool | None,
         is_error: bool | None,
