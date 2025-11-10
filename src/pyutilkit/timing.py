@@ -142,6 +142,9 @@ class Stopwatch:
     def __iter__(self) -> Iterator[Timing]:
         return iter(self.laps)
 
+    def reset(self) -> None:
+        self.laps.clear()
+
     @property
     def elapsed(self) -> Timing:
         return sum(self.laps, self._zero)

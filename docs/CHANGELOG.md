@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 - Added subtraction and negation to timing
 - Added iter, min, max, len for Stopwatch instances.
+- Added reset method to Stopwatch
 
 ### Changed
 

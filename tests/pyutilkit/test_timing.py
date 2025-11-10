@@ -130,3 +130,7 @@ def test_stopwatch() -> None:
 
     assert list(stopwatch) == stopwatch.laps
     assert stopwatch
+
+    stopwatch.reset()
+    assert len(stopwatch) == 0
+    assert not stopwatch
