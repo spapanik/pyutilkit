@@ -117,15 +117,15 @@ def test_stopwatch() -> None:
     assert not stopwatch
 
     with stopwatch:
-        sleep(0.001)
+        sleep(0.02)
 
     with stopwatch:
-        sleep(0.001)
+        sleep(0.02)
 
     assert len(stopwatch) == len(stopwatch.laps) == 2
-    assert stopwatch.laps[0].nanoseconds > 1_000_000
-    assert stopwatch.laps[1].nanoseconds > 1_000_000
-    assert stopwatch.average.nanoseconds > 1_000_000
+    assert stopwatch.laps[0].nanoseconds > 16_000_000
+    assert stopwatch.laps[1].nanoseconds > 16_000_000
+    assert stopwatch.average.nanoseconds > 16_000_000
     assert stopwatch.min <= stopwatch.average <= stopwatch.max
 
     assert list(stopwatch) == stopwatch.laps
