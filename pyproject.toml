@@ -6,7 +6,9 @@ build-backend = "phosphorus.construction.api"
 
 [project]
 name = "pyutilkit"
-version = "0.10.0"
+dynamic = [
+    "version",
+]
 
 authors = [
     { name = "Stephanos Kuma", email = "stephanos@kuma.ai" },
@@ -64,6 +66,9 @@ docs = [
     "pygments~=2.19",
     "pymdown-extensions~=10.15",
 ]
+
+[tool.phosphorus.dynamic]
+version = { file = "src/pyutilkit/__version__.py" }
 
 [tool.mypy]
 check_untyped_defs = true
@@ -149,7 +154,7 @@ source = [
 ]
 data_file = ".cov_cache/coverage.dat"
 omit = [
-    "src/pyutilkit/lib/type_defs.py",
+    "src/**/type_defs.py",
 ]
 
 [tool.coverage.report]
