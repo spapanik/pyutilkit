@@ -17,7 +17,7 @@ def get_timezones() -> set[str]:
     return available_timezones() - UNAVAILABLE_TIMEZONES
 
 
-def now(tz_info: ZoneInfo = UTC) -> datetime:
+def now(tz_info: tzinfo = UTC) -> datetime:
     return datetime.now(UTC).astimezone(tz_info)
 
 
