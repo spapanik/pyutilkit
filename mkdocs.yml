@@ -6,7 +6,13 @@ nav:
   - Home: README.md
   - Installation: installation.md
   - Usage:
-      - usage/index.md
+      - Overview: usage/index.md
+      - Classes: usage/classes.md
+      - Date Utilities: usage/date_utils.md
+      - File Utilities: usage/files.md
+      - Subprocess: usage/subprocess.md
+      - Terminal: usage/term.md
+      - Timing: usage/timing.md
   - About:
       - License: LICENSE.md
       - Changelog: CHANGELOG.md

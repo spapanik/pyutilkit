@@ -11,16 +11,87 @@
 [![build automation: yam][yam_badge]][yam_url]
 [![Lint: ruff][ruff_badge]][ruff_url]
 
-The Python has long maintained the philosophy of "batteries included", giving the user
-a rich standard library, avoiding the need for third party tools for most work. Some packages
-are so common, that the have a similar status to the standard library. Still, some code seems
-to be written time and again, with every project. This small library, with minimal requirements,
-hopes to stop this repetition.
+Python has long maintained the philosophy of "batteries included", providing users with a rich
+standard library that avoids the need for third-party tools for most tasks. Some packages are so
+common they have achieved similar status to the standard library. Yet, certain utilities are
+reimplemented across countless projects. This lightweight library, with minimal dependencies,
+aims to eliminate that repetition.
+
+## Quick Start
+
+Install pyutilkit:
+
+```bash
+pip install pyutilkit
+```
+
+Or with uv (recommended for speed):
+
+```bash
+uv pip install pyutilkit
+```
+
+Basic usage example:
+
+```python
+from pyutilkit.date_utils import now
+from pyutilkit.timing import Stopwatch
+from pyutilkit.term import SGRString, SGRCodes
+
+# Get current time in any timezone
+from zoneinfo import ZoneInfo
+tokyo_time = now(ZoneInfo("Asia/Tokyo"))
+print(f"Current time in Tokyo: {tokyo_time}")
+
+# Measure execution time
+stopwatch = Stopwatch()
+with stopwatch:
+    # Your code here
+    result = sum(range(1000000))
+print(f"Computation took: {stopwatch.elapsed}")
+
+# Colorful terminal output
+success = SGRString("✓ Task completed", params=[SGRCodes.GREEN, SGRCodes.BOLD])
+success.print()
+```
+
+## Key Features
+
+- **🕐 Timezone Utilities**: Robust datetime handling with cross-platform timezone support, ISO parsing (including Zulu timezone), and seamless timezone conversion
+- **⏱️ High-Precision Timing**: Nanosecond-precision timing with human-readable formatting, lap tracking, and stopwatch functionality
+- **🎨 Terminal Formatting**: ANSI color codes with smart TTY detection, automatic style stripping for piped output, and convenient header formatting
+- **🛡️ Error Handling**: Elegant exception handling decorator that logs errors and returns defaults instead of raising exceptions
+- **📁 File Utilities**: Efficient SHA-256 file hashing with buffered reading for large files
+- **🚀 Subprocess Enhancement**: Run shell commands with real-time output streaming, automatic timing, and structured results
+- **🔧 Design Patterns**: Thread-safe Singleton metaclass implementation
+- **✨ Zero Dependencies**: Pure Python using only standard library (except optional tzdata on Windows)
+- **🧪 Fully Tested**: 100% test coverage with comprehensive type annotations
+
+## Documentation
+
+- **[Installation Guide](installation.md)** - Setup instructions and requirements
+- **[Usage Guide](usage/index.md)** - Comprehensive examples and tutorials for all modules
+  - [Classes](usage/classes.md) - Singleton pattern implementation
+  - [Date Utilities](usage/date_utils.md) - Timezone-aware datetime operations
+  - [File Utilities](usage/files.md) - Exception handling and file hashing
+  - [Subprocess](usage/subprocess.md) - Enhanced command execution
+  - [Terminal](usage/term.md) - Terminal formatting and colors
+  - [Timing](usage/timing.md) - Performance measurement and benchmarking
+- **[Changelog](CHANGELOG.md)** - Version history and changes
+- **[Code of Conduct](CODE_OF_CONDUCT.md)** - Community guidelines
+
+## Requirements
+
+- Python 3.10 or higher
+- No external dependencies (tzdata is automatically installed on Windows)
 
 ## Links
 
-- [Documentation]
-- [Changelog]
+- [Full Documentation](https://pyutilkit.readthedocs.io/en/stable/)
+- [PyPI Package](https://pypi.org/project/pyutilkit)
+- [GitHub Repository](https://github.com/spapanik/pyutilkit)
+- [Changelog](CHANGELOG.md)
+- [Report Issues](https://github.com/spapanik/pyutilkit/issues)
 
 [build_badge]: https://github.com/spapanik/pyutilkit/actions/workflows/build.yml/badge.svg
 [build_url]: https://github.com/spapanik/pyutilkit/actions/workflows/build.yml
