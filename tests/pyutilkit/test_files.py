@@ -7,7 +7,7 @@ from pyutilkit.files import handle_exceptions, hash_file
 
 
 def test_handle_exceptions_handled_exception() -> None:
-    @handle_exceptions(exceptions=(ZeroDivisionError,), default=0.0)
+    @handle_exceptions(exceptions=(ZeroDivisionError,), default=0.0)  # ty: ignore[invalid-argument-type]
     def invert(n: int) -> float:
         return 1 / n
 
@@ -16,12 +16,13 @@ def test_handle_exceptions_handled_exception() -> None:
 
 
 def test_handle_exceptions_unhandled_exception() -> None:
-    @handle_exceptions(exceptions=(TypeError,), default=0.0)
+    @handle_exceptions(exceptions=(TypeError,), default=0.0)  # ty: ignore[invalid-argument-type]
     def invert(n: int) -> float:
         return 1 / n
 
     assert invert(1) == 1
-    pytest.raises(ZeroDivisionError, invert, 0)
+    with pytest.raises(ZeroDivisionError):
+        invert(0)
 
 
 def test_hash_file() -> None:

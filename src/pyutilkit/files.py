@@ -29,7 +29,7 @@ def handle_exceptions(
             except exceptions as exc:
                 getattr(logger, log_level)(
                     INGEST_ERROR,
-                    func.__name__,
+                    func.__name__,  # ty: ignore[unresolved-attribute]
                     exc.__class__.__name__,
                     args,
                     kwargs,
