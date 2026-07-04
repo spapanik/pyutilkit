@@ -13,6 +13,18 @@ def test_singleton() -> None:
     assert MySingleton() is MySingleton()
 
 
+def test_singleton_subclass() -> None:
+    class BaseClass:
+        @property
+        def my_property(self) -> int:
+            return 1
+
+    class MySingleton(BaseClass, metaclass=Singleton):
+        pass
+
+    assert MySingleton().my_property == 1
+
+
 def test_singleton_thread_safe() -> None:
     class MySingleton(metaclass=Singleton):
         def __init__(self) -> None:

@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import threading
+from typing import TypeVar, cast
+
+_T = TypeVar("_T")
 
 
 class Singleton(type):
-    instance: type | None
+    instance: object
+    _lock: threading.Lock
 
     def __init__(
         cls, name: str, bases: tuple[type[object], ...], namespace: dict[str, object]
@@ -13,9 +17,10 @@ class Singleton(type):
         cls.instance = None
         cls._lock = threading.Lock()
 
-    def __call__(cls) -> type:
-        if cls.instance is None:
-            with cls._lock:
-                if cls.instance is None:
-                    cls.instance = super().__call__()
-        return cls.instance
+    def __call__(cls: type[_T]) -> _T:
+        mcs = cast("Singleton", cls)
+        if mcs.instance is None:
+            with mcs._lock:
+                if mcs.instance is None:
+                    mcs.instance = super(Singleton, mcs).__call__()
+        return cast("_T", mcs.instance)
