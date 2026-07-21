@@ -174,3 +174,93 @@ def test_sgr_output_print_objects(capsys: mock.MagicMock) -> None:
     captured = capsys.readouterr()
     assert captured.out == f"1None{os.linesep}"
     assert captured.err == ""
+
+
+@pytest.mark.parametrize(
+    "env_value",
+    ["1", "true", "yes", "TRUE", "True", "YES"],
+)
+def test_force_sgr_via_env_truthy(
+    env_value: str, monkeypatch: pytest.MonkeyPatch, capsys: mock.MagicMock
+) -> None:
+    monkeypatch.setenv("PY_UTIL_FORCE_SGR", env_value)
+    sgr_string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED])
+    sgr_string.print()
+    captured = capsys.readouterr()
+    assert captured.out == f"\x1b[1m\x1b[31m*\x1b[0m{os.linesep}"
+
+
+@pytest.mark.parametrize(
+    "env_value",
+    ["0", "false", "no", "FALSE", "False", "NO"],
+)
+def test_force_sgr_via_env_falsy(
+    env_value: str, monkeypatch: pytest.MonkeyPatch, capsys: mock.MagicMock
+) -> None:
+    monkeypatch.setenv("PY_UTIL_FORCE_SGR", env_value)
+    sgr_string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED])
+    sgr_string.print()
+    captured = capsys.readouterr()
+    assert captured.out == f"*{os.linesep}"
+
+
+def test_force_sgr_via_env_unset(capsys: mock.MagicMock) -> None:
+    sgr_string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED])
+    sgr_string.print()
+    captured = capsys.readouterr()
+    assert captured.out == f"*{os.linesep}"
+
+
+@pytest.mark.parametrize(
+    "env_value",
+    ["1", "true", "yes", "TRUE", "True", "YES"],
+)
+def test_force_prefix_via_env_truthy(
+    env_value: str, monkeypatch: pytest.MonkeyPatch, capsys: mock.MagicMock
+) -> None:
+    monkeypatch.setenv("PY_UTIL_FORCE_PREFIX", env_value)
+    sgr_string = SGRString("*", prefix="x", suffix="x")
+    sgr_string.print()
+    captured = capsys.readouterr()
+    assert captured.out == f"x*x{os.linesep}"
+
+
+@pytest.mark.parametrize(
+    "env_value",
+    ["0", "false", "no", "FALSE", "False", "NO"],
+)
+def test_force_prefix_via_env_falsy(
+    env_value: str, monkeypatch: pytest.MonkeyPatch, capsys: mock.MagicMock
+) -> None:
+    monkeypatch.setenv("PY_UTIL_FORCE_PREFIX", env_value)
+    sgr_string = SGRString("*", prefix="x", suffix="x")
+    sgr_string.print()
+    captured = capsys.readouterr()
+    assert captured.out == f"*{os.linesep}"
+
+
+def test_force_prefix_via_env_unset(capsys: mock.MagicMock) -> None:
+    sgr_string = SGRString("*", prefix="x", suffix="x")
+    sgr_string.print()
+    captured = capsys.readouterr()
+    assert captured.out == f"*{os.linesep}"
+
+
+def test_force_sgr_constructor_overrides_env(
+    monkeypatch: pytest.MonkeyPatch, capsys: mock.MagicMock
+) -> None:
+    monkeypatch.setenv("PY_UTIL_FORCE_SGR", "0")
+    sgr_string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED], force_sgr=True)
+    sgr_string.print()
+    captured = capsys.readouterr()
+    assert captured.out == f"\x1b[1m\x1b[31m*\x1b[0m{os.linesep}"
+
+
+def test_force_prefix_constructor_overrides_env(
+    monkeypatch: pytest.MonkeyPatch, capsys: mock.MagicMock
+) -> None:
+    monkeypatch.setenv("PY_UTIL_FORCE_PREFIX", "0")
+    sgr_string = SGRString("*", prefix="x", suffix="x", force_prefix=True)
+    sgr_string.print()
+    captured = capsys.readouterr()
+    assert captured.out == f"x*x{os.linesep}"

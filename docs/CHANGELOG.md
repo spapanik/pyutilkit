@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed `TRUE_VAR` to `TRUTHY_VALUES` and changed its contents from falsy to truthy strings (`{"1", "true", "yes"}`) to fix inverted env-var behavior.
+
+### Fixed
+
+- `PY_UTIL_FORCE_SGR` and `PY_UTIL_FORCE_PREFIX` now work as documented: setting them to `1`, `true`, or `yes` (case-insensitive) enables forcing; setting them to `0`, `false`, or `no` disables it. Previously, `1`/`true`/`yes` had no effect while `0`/`false`/`no` enabled forcing.
+
 ## [0.11.0] - 2025-11-10
 
 ### Added

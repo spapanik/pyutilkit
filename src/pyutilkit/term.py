@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self  # upgrade: py3.10: import from typing
 
-TRUE_VAR = {"0", "false", "no"}
+TRUTHY_VALUES = {"1", "true", "yes"}
 
 
 @unique
@@ -90,9 +90,12 @@ class SGRString:
     ) -> None:
         params = tuple(params)
         force_prefix = (
-            force_prefix or os.getenv("PY_UTIL_FORCE_PREFIX", "").lower() in TRUE_VAR
+            force_prefix
+            or os.getenv("PY_UTIL_FORCE_PREFIX", "").lower() in TRUTHY_VALUES
         )
-        force_sgr = force_sgr or os.getenv("PY_UTIL_FORCE_SGR", "").lower() in TRUE_VAR
+        force_sgr = (
+            force_sgr or os.getenv("PY_UTIL_FORCE_SGR", "").lower() in TRUTHY_VALUES
+        )
 
         object.__setattr__(self, "_prefix", prefix)
         object.__setattr__(self, "_string", str(obj))
