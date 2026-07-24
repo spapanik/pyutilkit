@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Added
+
+- `Timing` now accepts `hours` and `minutes` keyword arguments in addition to the existing duration units.
+
 ### Changed
 
 - Renamed `TRUE_VAR` to `TRUTHY_VALUES` and changed its contents from falsy to truthy strings (`{"1", "true", "yes"}`) to fix inverted env-var behavior.
@@ -16,6 +20,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - `PY_UTIL_FORCE_SGR` and `PY_UTIL_FORCE_PREFIX` now work as documented: setting them to `1`, `true`, or `yes` (case-insensitive) enables forcing; setting them to `0`, `false`, or `no` disables it. Previously, `1`/`true`/`yes` had no effect while `0`/`false`/`no` enabled forcing.
 - `run_command` now drains stdout and stderr concurrently, preventing pipe-buffer deadlocks while preserving real-time output and captured results.
 - `run_command` now closes its pipes and reaps the child before propagating parent-stream write failures.
+- Corrected the documented `Timing` output for durations expressed in minutes.
 
 ## [0.11.0] - 2025-11-10
 

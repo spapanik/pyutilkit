@@ -14,17 +14,21 @@ from pyutilkit.timing import Stopwatch, Timing
         ({"nanoseconds": 1}, 1),
         ({"nanoseconds": 1, "days": 1}, 86_400_000_000_001),
         ({"nanoseconds": 1, "seconds": 1}, 1_000_000_001),
+        ({"nanoseconds": 1, "minutes": 1}, 60_000_000_001),
+        ({"nanoseconds": 1, "hours": 1}, 3_600_000_000_001),
         ({"nanoseconds": 1, "milliseconds": 1}, 1_000_001),
         ({"nanoseconds": 1, "microseconds": 1}, 1_001),
         (
             {
                 "nanoseconds": 1,
                 "days": 1,
+                "hours": 1,
+                "minutes": 1,
                 "seconds": 1,
                 "milliseconds": 1,
                 "microseconds": 1,
             },
-            86_401_001_001_001,
+            90_061_001_001_001,
         ),
     ],
 )
@@ -42,16 +46,21 @@ def test_timing(timings: dict[str, int], expected_nanoseconds: int) -> None:
         ({"nanoseconds": 1, "milliseconds": 1}, "1.0ms"),
         ({"nanoseconds": 1, "seconds": 1}, "1.00s"),
         ({"nanoseconds": 1, "days": 1}, "1d 00:00:00"),
+        ({"minutes": 2, "seconds": 30}, "00:02:30"),
+        ({"hours": 1, "minutes": 30, "seconds": 45}, "01:30:45"),
+        ({"hours": 25}, "1d 01:00:00"),
         ({"seconds": 3601}, "01:00:01"),
         (
             {
                 "nanoseconds": 1,
                 "days": 1,
+                "hours": 1,
+                "minutes": 1,
                 "seconds": 1,
                 "milliseconds": 1,
                 "microseconds": 1,
             },
-            "1d 00:00:01",
+            "1d 01:01:01",
         ),
     ],
 )
@@ -62,6 +71,11 @@ def test_timing_as_str(timings: dict[str, int], expected_str: str) -> None:
 def test_negative_timing() -> None:
     timing = -Timing(nanoseconds=5)
     assert timing.nanoseconds == -5
+
+
+def test_timing_hours_and_minutes_are_seconds_multiples() -> None:
+    assert Timing(minutes=1) == Timing(seconds=60)
+    assert Timing(hours=1) == Timing(minutes=60)
 
 
 @pytest.mark.parametrize(

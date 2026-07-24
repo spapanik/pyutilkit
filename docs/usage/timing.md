@@ -38,7 +38,7 @@ print(t1)  # 1.5µs
 print(t2)  # 500.0µs
 print(t3)  # 250.0ms
 print(t4)  # 5.00s
-print(t5)  # 02:30:00
+print(t5)  # 00:02:30
 print(t6)  # 01:30:45
 print(t7)  # 2d 03:00:00
 ```
@@ -57,7 +57,7 @@ print(Timing(nanoseconds=1500))        # 1.5µs
 print(Timing(microseconds=500))        # 500.0µs
 print(Timing(milliseconds=250))        # 250.0ms
 print(Timing(seconds=5))               # 5.00s
-print(Timing(seconds=90))              # 01:30:00
+print(Timing(seconds=90))              # 00:01:30
 print(Timing(hours=25))                # 1d 01:00:00
 print(Timing(days=10))                 # 10d 00:00:00
 
@@ -410,16 +410,13 @@ class TaskWithTimeout:
 
         try:
             with stopwatch:
-                result = task(*args, **kwargs)
+                task(*args, **kwargs)
 
-                # Check if we exceeded timeout
-                if stopwatch.elapsed > self.timeout:
-                    return False, stopwatch.elapsed
-
-            return True, stopwatch.elapsed
-
-        except Exception as e:
+        except Exception:
             return False, stopwatch.elapsed
+
+        # The elapsed lap is available after leaving the context manager
+        return stopwatch.elapsed <= self.timeout, stopwatch.elapsed
 
 
 # Example usage
@@ -442,12 +439,12 @@ executor = TaskWithTimeout(timeout)
 # Fast task succeeds
 success, elapsed = executor.execute(fast_task)
 print(f"Fast task: {'✓' if success else '✗'} ({elapsed})")
-# Output: Fast task: ✓ (100.5ms)
+# Example output: Fast task: ✓ (~100ms)
 
 # Slow task times out
 success, elapsed = executor.execute(slow_task)
 print(f"Slow task: {'✓' if success else '✗'} ({elapsed})")
-# Output: Slow task: ✗ (2.00s)
+# Example output: Slow task: ✗ (~2s)
 ```
 
 ### Batch Processing Progress Tracker
@@ -562,7 +559,7 @@ class SLAMonitor:
         successes = sum(1 for m in self.measurements if m[1])
         total = len(self.measurements)
 
-        avg_response = sum(response_times) // total
+        avg_response = sum(response_times, Timing()) // total
         success_rate = (successes / total) * 100
 
         # Check compliance

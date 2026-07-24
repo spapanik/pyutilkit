@@ -14,7 +14,8 @@ METRIC_MULTIPLIER = 1_000
 SECONDS_PER_MINUTE = 60
 MINUTES_PER_HOUR = 60
 HOURS_PER_DAY = 24
-SECONDS_PER_DAY = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY
+SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR
+SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY
 
 
 @dataclass(frozen=True, order=True, slots=True)
@@ -25,6 +26,8 @@ class Timing:
         self,
         *,
         days: int = 0,
+        hours: int = 0,
+        minutes: int = 0,
         seconds: int = 0,
         milliseconds: int = 0,
         microseconds: int = 0,
@@ -35,6 +38,8 @@ class Timing:
             + METRIC_MULTIPLIER * microseconds
             + METRIC_MULTIPLIER**2 * milliseconds
             + METRIC_MULTIPLIER**3 * seconds
+            + SECONDS_PER_MINUTE * METRIC_MULTIPLIER**3 * minutes
+            + SECONDS_PER_HOUR * METRIC_MULTIPLIER**3 * hours
             + SECONDS_PER_DAY * METRIC_MULTIPLIER**3 * days
         )
         object.__setattr__(self, "nanoseconds", total_nanoseconds)
