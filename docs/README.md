@@ -62,7 +62,7 @@ success.print()
 - **🎨 Terminal Formatting**: ANSI color codes with smart TTY detection, automatic style stripping for piped output, and convenient header formatting
 - **🛡️ Error Handling**: Elegant exception handling decorator that logs errors and returns defaults instead of raising exceptions
 - **📁 File Utilities**: Efficient SHA-256 file hashing with buffered reading for large files
-- **🚀 Subprocess Enhancement**: Run shell commands with real-time output streaming, automatic timing, and structured results
+- **🚀 Subprocess Enhancement**: Run external commands with real-time output streaming, automatic timing, and structured results
 - **🔧 Design Patterns**: Thread-safe Singleton metaclass implementation
 - **✨ Zero Dependencies**: Pure Python using only standard library (except optional tzdata on Windows)
 - **🧪 Fully Tested**: 100% test coverage with comprehensive type annotations

@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
+from queue import SimpleQueue
 from subprocess import PIPE, Popen
-from typing import TYPE_CHECKING
+from threading import Thread
+from typing import TYPE_CHECKING, cast
 
 from pyutilkit.timing import Stopwatch, Timing
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import BinaryIO
 
 
 @dataclass(frozen=True)
@@ -20,31 +23,76 @@ class ProcessOutput:
     elapsed: Timing
 
 
+def _write_output(stream: BinaryIO, line: bytes) -> None:
+    stream.write(line)
+    stream.flush()
+
+
+def _drain_pipe(
+    pipe: BinaryIO,
+    output: BinaryIO,
+    captured: list[bytes],
+    errors: SimpleQueue[Exception],
+) -> None:
+    echo = True
+    for line in pipe:
+        captured.append(line)
+        if not echo:
+            continue
+        try:
+            _write_output(output, line)
+        except Exception as exc:  # noqa: BLE001
+            errors.put(exc)
+            echo = False
+
+
+def _validate_command(command: object) -> list[str]:
+    if not isinstance(command, list):
+        msg = "command must be a list of argument strings"
+        raise TypeError(msg)
+    return cast("list[str]", command)
+
+
 def run_command(
-    command: str | list[str],
+    command: list[str],
     cwd: str | Path | None = None,
     env: dict[str, str] | None = None,
 ) -> ProcessOutput:
-    stdout = []
-    stderr = []
+    command = _validate_command(command)
+
+    stdout: list[bytes] = []
+    stderr: list[bytes] = []
+    errors: SimpleQueue[Exception] = SimpleQueue()
     stopwatch = Stopwatch()
-    with stopwatch:
-        process = Popen(  # noqa: S603
+    with (
+        stopwatch,
+        Popen(  # noqa: S603
             command, stdout=PIPE, stderr=PIPE, cwd=cwd, env=env
+        ) as process,
+    ):
+        stdout_pipe = cast("BinaryIO", process.stdout)
+        stderr_pipe = cast("BinaryIO", process.stderr)
+        readers = (
+            Thread(
+                target=_drain_pipe,
+                args=(stdout_pipe, sys.stdout.buffer, stdout, errors),
+                name=f"pyutilkit-stdout-{process.pid}",
+            ),
+            Thread(
+                target=_drain_pipe,
+                args=(stderr_pipe, sys.stderr.buffer, stderr, errors),
+                name=f"pyutilkit-stderr-{process.pid}",
+            ),
         )
+        for reader in readers:
+            reader.start()
 
-        for line in process.stdout or []:
-            sys.stdout.buffer.write(line)
-            sys.stdout.flush()
-            stdout.append(line)
-
-        for line in process.stderr or []:
-            sys.stderr.buffer.write(line)
-            sys.stderr.flush()
-            stderr.append(line)
-
-    with stopwatch:
         process.wait()
+        for reader in readers:
+            reader.join()
+
+    if not errors.empty():
+        raise errors.get()
 
     return ProcessOutput(
         stdout=b"".join(stdout),

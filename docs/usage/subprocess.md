@@ -1,6 +1,6 @@
 # Subprocess Module
 
-The `subprocess` module provides enhanced subprocess execution with real-time output streaming, structured results, and built-in timing. It simplifies running shell commands while capturing their output and measuring performance.
+The `subprocess` module provides enhanced subprocess execution with real-time output streaming, structured results, and built-in timing. It simplifies running external commands while capturing their output and measuring performance.
 
 ## Overview
 
@@ -43,15 +43,20 @@ else:
     print(f"Error:\n{result.stderr.decode()}")
 ```
 
-### String Commands
+### Argument Lists, Not Shell Strings
 
 ```python
 from pyutilkit.subprocess import run_command
 
-# You can also pass commands as strings (uses shell)
-result = run_command("echo 'Hello from shell'")
-print(result.stdout)  # b"Hello from shell\n"
+# Pass the executable and every argument as separate list items
+result = run_command(["echo", "Hello from an argument list"])
+print(result.stdout)  # b"Hello from an argument list\n"
 ```
+
+`run_command` deliberately accepts only `list[str]` and does not invoke a
+shell. A string such as `"echo hello"` raises `TypeError`; shell expansion,
+pipes, redirects, and variable substitution are therefore never enabled
+implicitly.
 
 ## Advanced Patterns
 
@@ -111,7 +116,8 @@ except RuntimeError as e:
 
 ### Real-Time Output Streaming
 
-The `run_command` function automatically streams output to the console while capturing it:
+The `run_command` function drains stdout and stderr concurrently, streaming
+complete lines to the corresponding parent streams while capturing them:
 
 ```python
 from pyutilkit.subprocess import run_command
@@ -201,7 +207,7 @@ class SystemMetrics:
 
 
 class SystemMonitor:
-    """Collect system metrics using shell commands."""
+    """Collect system metrics using external commands."""
 
     def collect_metrics(self) -> SystemMetrics:
         """Collect current system metrics."""
@@ -470,17 +476,17 @@ if not success:
 
 ## Common Pitfalls
 
-!!! warning "Shell Injection"
-    When passing commands as strings, be careful of shell injection vulnerabilities. Always prefer list format `["command", "arg1", "arg2"]` over string format `"command arg1 arg2"` when possible.
+!!! warning "Shell Execution"
+    `run_command` never invokes a shell implicitly. If shell syntax is genuinely required, invoke the platform's shell explicitly and never interpolate untrusted input into its command string.
 
 !!! warning "Large Output"
     For commands that produce very large output, consider redirecting to files instead of capturing in memory. The current implementation stores all output in memory.
 
 !!! tip "Timeout Handling"
-    For long-running commands, implement timeout logic by checking `result.elapsed` or using external timeout mechanisms.
+    `run_command` does not currently expose a timeout parameter. Use an external timeout mechanism when a deadline is required; `result.elapsed` is available only after the child exits.
 
 !!! tip "Cross-Platform Compatibility"
-    Remember that shell commands may differ between operating systems. Use platform-specific commands or cross-platform alternatives when possible.
+    Executable names and arguments may differ between operating systems. Use platform-specific commands or cross-platform alternatives when necessary.
 
 ## API Reference
 

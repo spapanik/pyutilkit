@@ -111,7 +111,7 @@ result = safe_parse({})  # Returns None instead of raising KeyError
 
 ### 🚀 Running Commands
 
-Execute shell commands with real-time output and timing?
+Execute external commands with real-time output and timing?
 
 ```python
 from pyutilkit.subprocess import run_command

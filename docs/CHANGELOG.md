@@ -9,10 +9,13 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 ### Changed
 
 - Renamed `TRUE_VAR` to `TRUTHY_VALUES` and changed its contents from falsy to truthy strings (`{"1", "true", "yes"}`) to fix inverted env-var behavior.
+- `run_command` now requires an argument list (`list[str]`) and rejects ambiguous string commands instead of appearing to support shell syntax.
 
 ### Fixed
 
 - `PY_UTIL_FORCE_SGR` and `PY_UTIL_FORCE_PREFIX` now work as documented: setting them to `1`, `true`, or `yes` (case-insensitive) enables forcing; setting them to `0`, `false`, or `no` disables it. Previously, `1`/`true`/`yes` had no effect while `0`/`false`/`no` enabled forcing.
+- `run_command` now drains stdout and stderr concurrently, preventing pipe-buffer deadlocks while preserving real-time output and captured results.
+- `run_command` now closes its pipes and reaps the child before propagating parent-stream write failures.
 
 ## [0.11.0] - 2025-11-10
 
