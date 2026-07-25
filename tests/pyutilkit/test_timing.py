@@ -122,11 +122,22 @@ def test_timing_operators_exceptions() -> None:
         timing // "1"
 
 
+@pytest.mark.parametrize("statistic", ["average", "min", "max"])
+def test_stopwatch_statistics_require_laps(statistic: str) -> None:
+    with pytest.raises(ValueError, match=r"^No laps recorded$"):
+        getattr(Stopwatch(), statistic)
+
+
+def test_stopwatch_statistics_with_one_lap() -> None:
+    stopwatch = Stopwatch()
+    lap = Timing(nanoseconds=5)
+    stopwatch.laps.append(lap)
+
+    assert stopwatch.average == stopwatch.min == stopwatch.max == lap
+
+
 def test_stopwatch() -> None:
     stopwatch = Stopwatch()
-
-    with pytest.raises(ZeroDivisionError):
-        stopwatch.average  # noqa: B018
 
     assert not stopwatch
 

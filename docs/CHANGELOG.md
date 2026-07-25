@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 - Renamed `TRUE_VAR` to `TRUTHY_VALUES` and changed its contents from falsy to truthy strings (`{"1", "true", "yes"}`) to fix inverted env-var behavior.
 - `run_command` now requires an argument list (`list[str]`) and rejects ambiguous string commands instead of appearing to support shell syntax.
+- `Stopwatch.average`, `.min`, and `.max` now consistently raise `ValueError("No laps recorded")` when no laps are available; `.average` previously raised `ZeroDivisionError`.
 
 ### Fixed
 

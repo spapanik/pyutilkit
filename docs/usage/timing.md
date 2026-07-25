@@ -635,8 +635,8 @@ print(monitor.report(sla))
 !!! warning "Context Manager Usage"
 Always use `Stopwatch` as a context manager (`with stopwatch:`). Manually calling `__enter__` and `__exit__` can lead to incorrect measurements.
 
-!!! warning "Division by Zero"
-Calling `stopwatch.average` when no laps have been recorded raises `ZeroDivisionError`. Always check `len(stopwatch)` first or handle the exception.
+!!! warning "No Recorded Laps"
+Accessing `stopwatch.average`, `stopwatch.min`, or `stopwatch.max` when no laps have been recorded raises `ValueError("No laps recorded")`. Always check `len(stopwatch)` first or handle the exception.
 
 !!! tip "Use Appropriate Precision"
 For most applications, millisecond precision is sufficient. Use nanosecond precision only when you need extreme accuracy (e.g., benchmarking very fast operations).

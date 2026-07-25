@@ -154,17 +154,22 @@ class Stopwatch:
     def elapsed(self) -> Timing:
         return sum(self.laps, self._zero)
 
-    @property
-    def average(self) -> Timing:
+    def _require_laps(self) -> None:
         if not self.laps:
             msg = "No laps recorded"
-            raise ZeroDivisionError(msg)
+            raise ValueError(msg)
+
+    @property
+    def average(self) -> Timing:
+        self._require_laps()
         return self.elapsed // len(self)
 
     @property
     def min(self) -> Timing:
+        self._require_laps()
         return min(self.laps)
 
     @property
     def max(self) -> Timing:
+        self._require_laps()
         return max(self.laps)
