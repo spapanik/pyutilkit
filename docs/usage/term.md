@@ -516,22 +516,17 @@ dashboard.display()
 ## Common Pitfalls
 
 !!! warning "TTY Detection"
-When piping output to a file or another command, ANSI codes are automatically stripped. This is usually desired behavior, but you can override it with `PY_UTIL_FORCE_SGR=1`.
+
+    When piping output to a file or another command, ANSI codes are automatically stripped. This is usually desired behavior, but you can override it with `PY_UTIL_FORCE_SGR=1`.
 
 !!! warning "Windows Compatibility"
-Older Windows terminals may not support ANSI codes. Modern Windows 10+ terminals do support them. Consider using libraries like `colorama` for broader Windows compatibility if needed.
+
+    Older Windows terminals may not support ANSI codes. Modern Windows 10+ terminals do support them. Consider using libraries like `colorama` for broader Windows compatibility if needed.
 
 !!! tip "Use Bright Colors for Better Visibility"
-Standard colors can be hard to read on some terminals. Use bright variants (`RED_BRIGHT`, `GREEN_BRIGHT`, etc.) for better visibility.
+
+    Standard colors can be hard to read on some terminals. Use bright variants (`RED_BRIGHT`, `GREEN_BRIGHT`, etc.) for better visibility.
 
 !!! tip "Test with Piped Output"
-Always test your CLI tools with piped output (`command | cat`) to ensure they work correctly when colors are stripped.
 
-## API Reference
-
-::: pyutilkit.term
-handler: python
-options:
-show_root_heading: true
-show_source: false
-members: - SGRCodes - SGRString - SGROutput
+    Always test your CLI tools with piped output (`command | cat`) to ensure they work correctly when colors are stripped.

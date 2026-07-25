@@ -278,22 +278,17 @@ for log in sorted(normalized_logs, key=lambda x: x["timestamp_utc"]):
 ## Common Pitfalls
 
 !!! warning "Naive vs Aware Datetimes"
-Always ensure your datetimes are timezone-aware before converting. Use `add_timezone()` for naive datetimes and `convert_timezone()` for aware datetimes. Mixing them up will raise `ValueError`.
+
+    Always ensure your datetimes are timezone-aware before converting. Use `add_timezone()` for naive datetimes and `convert_timezone()` for aware datetimes. Mixing them up will raise `ValueError`.
 
 !!! warning "DST Transitions"
-Be careful during Daylight Saving Time transitions. The same wall-clock time might occur twice or not at all. The `zoneinfo` module handles this, but be aware of potential ambiguities.
+
+    Be careful during Daylight Saving Time transitions. The same wall-clock time might occur twice or not at all. The `zoneinfo` module handles this, but be aware of potential ambiguities.
 
 !!! tip "Always Store in UTC"
-Store timestamps in UTC and convert to local time only for display. This avoids confusion and makes comparisons straightforward.
+
+    Store timestamps in UTC and convert to local time only for display. This avoids confusion and makes comparisons straightforward.
 
 !!! tip "Use from_iso() for API Responses"
-When parsing timestamps from APIs, always use `from_iso()` instead of `datetime.fromisoformat()` directly. It properly handles the Zulu timezone ("Z") which is valid ISO 8601 but not supported by Python's standard parser.
 
-## API Reference
-
-::: pyutilkit.date_utils
-handler: python
-options:
-show_root_heading: true
-show_source: false
-members: - now - from_iso - from_timestamp - add_timezone - convert_timezone - get_timezones - UTC
+    When parsing timestamps from APIs, always use `from_iso()` instead of `datetime.fromisoformat()` directly. It properly handles the Zulu timezone ("Z") which is valid ISO 8601 but not supported by Python's standard parser.

@@ -450,22 +450,17 @@ if not success:
 ## Common Pitfalls
 
 !!! warning "Shell Execution"
-`run_command` never invokes a shell implicitly. If shell syntax is genuinely required, invoke the platform's shell explicitly and never interpolate untrusted input into its command string.
+
+    `run_command` never invokes a shell implicitly. If shell syntax is genuinely required, invoke the platform's shell explicitly and never interpolate untrusted input into its command string.
 
 !!! warning "Large Output"
-For commands that produce very large output, consider redirecting to files instead of capturing in memory. The current implementation stores all output in memory.
+
+    For commands that produce very large output, consider redirecting to files instead of capturing in memory. The current implementation stores all output in memory.
 
 !!! tip "Timeout Handling"
-`run_command` does not currently expose a timeout parameter. Use an external timeout mechanism when a deadline is required; `result.elapsed` is available only after the child exits.
+
+    `run_command` does not currently expose a timeout parameter. Use an external timeout mechanism when a deadline is required; `result.elapsed` is available only after the child exits.
 
 !!! tip "Cross-Platform Compatibility"
-Executable names and arguments may differ between operating systems. Use platform-specific commands or cross-platform alternatives when necessary.
 
-## API Reference
-
-::: pyutilkit.subprocess
-handler: python
-options:
-show_root_heading: true
-show_source: false
-members: - run_command - ProcessOutput
+    Executable names and arguments may differ between operating systems. Use platform-specific commands or cross-platform alternatives when necessary.

@@ -459,22 +459,17 @@ else:
 ## Common Pitfalls
 
 !!! warning "Silent Failures"
-The `handle_exceptions` decorator can mask bugs by catching all exceptions. Always specify the exact exceptions you expect, and use appropriate log levels to ensure failures are visible during development.
+
+    The `handle_exceptions` decorator can mask bugs by catching all exceptions. Always specify the exact exceptions you expect, and use appropriate log levels to ensure failures are visible during development.
 
 !!! tip "Use Specific Exceptions"
-Instead of catching `Exception`, catch specific exceptions like `ValueError`, `KeyError`, etc. This makes debugging easier and prevents hiding unexpected errors.
+
+    Instead of catching `Exception`, catch specific exceptions like `ValueError`, `KeyError`, etc. This makes debugging easier and prevents hiding unexpected errors.
 
 !!! warning "Buffer Size Trade-offs"
-For `hash_file`, larger buffer sizes are faster but use more memory. The default (64KB) is good for most cases. Use larger buffers (1MB+) only for very large files (>1GB).
+
+    For `hash_file`, larger buffer sizes are faster but use more memory. The default (64KB) is good for most cases. Use larger buffers (1MB+) only for very large files (>1GB).
 
 !!! tip "Hash Collisions"
-SHA-256 collisions are extremely unlikely but theoretically possible. For critical security applications, consider additional verification methods beyond just hash comparison.
 
-## API Reference
-
-::: pyutilkit.files
-handler: python
-options:
-show_root_heading: true
-show_source: false
-members: - handle_exceptions - hash_file
+    SHA-256 collisions are extremely unlikely but theoretically possible. For critical security applications, consider additional verification methods beyond just hash comparison.

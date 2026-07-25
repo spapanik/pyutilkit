@@ -633,22 +633,17 @@ print(monitor.report(sla))
 ## Common Pitfalls
 
 !!! warning "Context Manager Usage"
-Always use `Stopwatch` as a context manager (`with stopwatch:`). Manually calling `__enter__` and `__exit__` can lead to incorrect measurements.
+
+    Always use `Stopwatch` as a context manager (`with stopwatch:`). Manually calling `__enter__` and `__exit__` can lead to incorrect measurements.
 
 !!! warning "No Recorded Laps"
-Accessing `stopwatch.average`, `stopwatch.min`, or `stopwatch.max` when no laps have been recorded raises `ValueError("No laps recorded")`. Always check `len(stopwatch)` first or handle the exception.
+
+    Accessing `stopwatch.average`, `stopwatch.min`, or `stopwatch.max` when no laps have been recorded raises `ValueError("No laps recorded")`. Always check `len(stopwatch)` first or handle the exception.
 
 !!! tip "Use Appropriate Precision"
-For most applications, millisecond precision is sufficient. Use nanosecond precision only when you need extreme accuracy (e.g., benchmarking very fast operations).
+
+    For most applications, millisecond precision is sufficient. Use nanosecond precision only when you need extreme accuracy (e.g., benchmarking very fast operations).
 
 !!! tip "Account for Overhead"
-The timing itself has minimal overhead, but be aware that printing or logging during measurement can affect results. Keep measurement code separate from reporting code.
 
-## API Reference
-
-::: pyutilkit.timing
-handler: python
-options:
-show_root_heading: true
-show_source: false
-members: - Timing - Stopwatch
+    The timing itself has minimal overhead, but be aware that printing or logging during measurement can affect results. Keep measurement code separate from reporting code.

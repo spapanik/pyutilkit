@@ -138,7 +138,8 @@ pool.release_connection(conn)
 ### Common Pitfalls
 
 !!! warning "Testing Challenges"
-Singletons can make testing difficult because state persists between tests. Consider resetting the singleton instance between tests:
+
+    Singletons can make testing difficult because state persists between tests. Consider resetting the singleton instance between tests:
 
     ```python
     # In your test teardown
@@ -147,15 +148,11 @@ Singletons can make testing difficult because state persists between tests. Cons
     ```
 
 !!! warning "Hidden Dependencies"
-Singletons create implicit dependencies that can make code harder to understand and maintain. Use dependency injection when possible for better testability.
 
-!!! tip "When NOT to Use Singletons" - When you might need multiple instances in the future - For simple utility functions (use modules instead) - When state management becomes complex (consider a proper state management solution)
+    Singletons create implicit dependencies that can make code harder to understand and maintain. Use dependency injection when possible for better testability.
 
-### API Reference
+!!! tip "When NOT to Use Singletons"
 
-::: pyutilkit.classes.Singleton
-handler: python
-options:
-show_root_heading: true
-show_source: false
-members: - **init** - **call**
+    - When you might need multiple instances in the future
+    - For simple utility functions (use modules instead)
+    - When state management becomes complex (consider a proper state management solution)
