@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 from time import perf_counter_ns
 from typing import TYPE_CHECKING
@@ -42,7 +43,14 @@ class Timing:
             + SECONDS_PER_HOUR * METRIC_MULTIPLIER**3 * hours
             + SECONDS_PER_DAY * METRIC_MULTIPLIER**3 * days
         )
-        object.__setattr__(self, "nanoseconds", total_nanoseconds)
+        rounded_nanoseconds = round(total_nanoseconds)
+        if rounded_nanoseconds != total_nanoseconds:
+            warnings.warn(
+                "Timing received a fractional duration; "
+                "rounding to the nearest nanosecond.",
+                stacklevel=2,
+            )
+        object.__setattr__(self, "nanoseconds", rounded_nanoseconds)
 
     def __str__(self) -> str:
         if self.nanoseconds == 0:

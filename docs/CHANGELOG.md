@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - `SGRString.print()` and `SGROutput.print()` now default `end` to `"\n"` instead of `os.linesep`, preventing `\r\r\n` on Windows text streams that already translate `\n`.
 - `SGRString.header()` now preserves `is_error`, `force_prefix`, and `force_sgr` on its padded copy instead of resetting them.
 - `SGROutput.header()` now raises `ValueError("Exactly one string is required for the header")` for an empty output instead of an `IndexError`.
+- `Timing` now rounds its total to an integer number of nanoseconds instead of silently producing a float-valued `nanoseconds` that broke formatting and equality. A `UserWarning` is emitted only when rounding actually discards precision (e.g. `nanoseconds=1.5`); a `float` duration that lands on a whole nanosecond (e.g. `seconds=1.0`) is treated identically to its `int` equivalent, with no warning.
 
 ## [0.11.0] - 2025-11-10
 

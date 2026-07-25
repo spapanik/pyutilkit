@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from time import sleep
 
 import pytest
@@ -76,6 +77,38 @@ def test_negative_timing() -> None:
 def test_timing_hours_and_minutes_are_seconds_multiples() -> None:
     assert Timing(minutes=1) == Timing(seconds=60)
     assert Timing(hours=1) == Timing(minutes=60)
+
+
+def test_timing_accepts_fractional_float_and_warns() -> None:
+    with pytest.warns(UserWarning, match="fractional duration"):
+        timing = Timing(
+            nanoseconds=1.5  # type: ignore[arg-type] # ty: ignore[invalid-argument-type]
+        )
+
+    assert isinstance(timing.nanoseconds, int)
+    assert timing == Timing(nanoseconds=2)
+
+
+def test_timing_whole_seconds_float_equals_int_without_warning() -> None:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        timing = Timing(
+            seconds=1.5  # type: ignore[arg-type] # ty: ignore[invalid-argument-type]
+        )
+
+    assert isinstance(timing.nanoseconds, int)
+    assert timing == Timing(milliseconds=1500)
+
+
+def test_timing_whole_float_equals_int_without_warning() -> None:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        timing = Timing(
+            seconds=1.0  # type: ignore[arg-type] # ty: ignore[invalid-argument-type]
+        )
+
+    assert isinstance(timing.nanoseconds, int)
+    assert timing == Timing(seconds=1)
 
 
 @pytest.mark.parametrize(
