@@ -6,7 +6,7 @@ build-backend = "uv_build"
 
 [project]
 name = "pyutilkit"
-version = "0.11.0.post1"
+version = "0.12.0"
 
 authors = [
     { name = "Stephanos Kuma", email = "stephanos@kuma.ai" },
