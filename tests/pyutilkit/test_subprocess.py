@@ -15,7 +15,11 @@ from pyutilkit.timing import Timing
 
 
 def test_run_command() -> None:
-    command = [sys.executable, "-c", "print('Hello, World!')"]
+    command = [
+        sys.executable,
+        "-c",
+        "import sys; sys.stdout.buffer.write(b'Hello, World!\\n')",
+    ]
     output = run_command(command)
     assert output.stdout == b"Hello, World!\n"
     assert output.stderr == b""
@@ -38,7 +42,10 @@ def test_run_command_with_stderr() -> None:
     command = [
         sys.executable,
         "-c",
-        "import sys; print('error', file=sys.stderr); raise SystemExit(1)",
+        (
+            "import sys; sys.stderr.buffer.write(b'error\\n'); "
+            "sys.stderr.buffer.flush(); raise SystemExit(1)"
+        ),
     ]
     output = run_command(command)
     assert output.stdout == b""
@@ -46,6 +53,17 @@ def test_run_command_with_stderr() -> None:
     assert output.returncode != 0
     assert output.elapsed > Timing(nanoseconds=0)
     assert output.pid > 0
+
+
+def test_run_command_preserves_native_line_endings() -> None:
+    r"""`run_command` captures raw bytes, so a child's text-mode newlines survive.
+
+    On Windows a child's `print()` emits `\r\n`; the output must not be
+    normalised to `\n`.
+    """
+    command = [sys.executable, "-c", "print('Hello, World!')"]
+    output = run_command(command)
+    assert output.stdout == b"Hello, World!" + os.linesep.encode()
 
 
 def test_run_command_rejects_string_commands() -> None:
@@ -97,10 +115,12 @@ def test_run_command_streams_before_process_exit(
     completion_marker = tmp_path / f"{stream_name}-complete"
     child_code = (
         "import pathlib, sys, time; "
-        f"print('ready', file=sys.{stream_name}, flush=True); "
+        f"sys.{stream_name}.buffer.write(b'ready\\n'); "
+        f"sys.{stream_name}.buffer.flush(); "
         "time.sleep(0.2); "
         f"pathlib.Path({str(completion_marker)!r}).write_text('done'); "
-        f"print('after', file=sys.{stream_name}, flush=True)"
+        f"sys.{stream_name}.buffer.write(b'after\\n'); "
+        f"sys.{stream_name}.buffer.flush()"
     )
     marker_states: list[bool] = []
 
