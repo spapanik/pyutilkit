@@ -86,6 +86,10 @@ def critical_operation(data: dict) -> str:
 result = critical_operation({})  # Logs as ERROR level
 ```
 
+Supported values are `debug`, `info`, `warning`, `error`, `critical`, and
+`exception`. Invalid values raise `ValueError` immediately when the decorator
+is applied, rather than masking a later exception from the wrapped function.
+
 ## Real-World Examples
 
 ### Data Pipeline Error Handling

@@ -1,9 +1,11 @@
+import logging
 import os
 from pathlib import Path
+from typing import NoReturn, cast
 
 import pytest
 
-from pyutilkit.files import handle_exceptions, hash_file
+from pyutilkit.files import LogLevel, handle_exceptions, hash_file
 
 
 def test_handle_exceptions_handled_exception() -> None:
@@ -23,6 +25,43 @@ def test_handle_exceptions_unhandled_exception() -> None:
     assert invert(1) == 1
     with pytest.raises(ZeroDivisionError):
         invert(0)
+
+
+def test_handle_exceptions_rejects_invalid_log_level_at_decoration_time() -> None:
+    invalid_level = cast("LogLevel", "warnign")
+
+    with pytest.raises(ValueError, match="Unsupported log level 'warnign'"):
+
+        @handle_exceptions(log_level=invalid_level)
+        def decorated() -> NoReturn:
+            msg = "The wrapped function must not run"
+            raise AssertionError(msg)
+
+
+def test_handle_exceptions_logs_at_requested_level(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    fallback: str = "fallback"
+
+    @handle_exceptions(  # ty: ignore[invalid-argument-type]
+        exceptions=(RuntimeError,),
+        default=fallback,
+        log_level="error",
+    )
+    def fail() -> str:
+        msg = "expected failure"
+        raise RuntimeError(msg)
+
+    with caplog.at_level(logging.ERROR, logger="pyutilkit.files"):
+        result = fail()
+
+    assert result == "fallback"
+    assert len(caplog.records) == 1
+    record = caplog.records[0]
+    assert record.levelno == logging.ERROR
+    assert record.exc_info is not None
+    assert record.exc_info[0] is RuntimeError
+    assert record.message.startswith("Function `fail` threw `RuntimeError`")
 
 
 def test_hash_file() -> None:

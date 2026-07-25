@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - `run_command` now drains stdout and stderr concurrently, preventing pipe-buffer deadlocks while preserving real-time output and captured results.
 - `run_command` now closes its pipes and reaps the child before propagating parent-stream write failures.
 - Corrected the documented `Timing` output for durations expressed in minutes.
+- `handle_exceptions` now rejects unsupported log levels when the decorator is applied, preventing configuration errors from masking exceptions raised by the wrapped function.
 
 ## [0.11.0] - 2025-11-10
 
