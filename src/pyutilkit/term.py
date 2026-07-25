@@ -139,7 +139,7 @@ class SGRString:
             is_error=self._is_error,
         )
 
-    def print(self, end: str = os.linesep, *, full_color: bool = False) -> None:
+    def print(self, end: str = "\n", *, full_color: bool = False) -> None:
         """Print the command output.
 
         The command will be printed to stdout if it's not the output of an error,
@@ -205,7 +205,15 @@ class SGRString:
         half = (columns - title_length) / 2
         prefix = f"{padding * ceil(half)}{space * left_spaces}{self._prefix}"
         suffix = f"{self._suffix}{space * right_spaces}{padding * floor(half)}"
-        type(self)(self._string, prefix=prefix, suffix=suffix, params=self._sgr).print()
+        type(self)(
+            self._string,
+            prefix=prefix,
+            suffix=suffix,
+            params=self._sgr,
+            force_prefix=self._force_prefix,
+            force_sgr=self._force_sgr,
+            is_error=self._is_error,
+        ).print()
 
 
 @dataclass(frozen=True, order=True, slots=True)
@@ -261,7 +269,7 @@ class SGROutput:
             is_error=is_error,
         )
 
-    def print(self, sep: str = "", end: str = os.linesep) -> None:
+    def print(self, sep: str = "", end: str = "\n") -> None:
         n = len(self._strings)
         for index, string in enumerate(self._strings, start=1):
             current_end = end if index == n else sep
@@ -276,8 +284,8 @@ class SGROutput:
         space: str = " ",
     ) -> None:
         n = len(self._strings)
-        if n > 1:
-            msg = "Only one string is allowed for the header"
+        if n != 1:
+            msg = "Exactly one string is required for the header"
             raise ValueError(msg)
 
         self._strings[0].header(

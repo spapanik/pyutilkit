@@ -23,6 +23,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - `run_command` now closes its pipes and reaps the child before propagating parent-stream write failures.
 - Corrected the documented `Timing` output for durations expressed in minutes.
 - `handle_exceptions` now rejects unsupported log levels when the decorator is applied, preventing configuration errors from masking exceptions raised by the wrapped function.
+- Corrected the terminal usage guide's TTY handling, output routing, environment overrides, `full_color` example, and composite-output examples.
+- `SGRString.print()` and `SGROutput.print()` now default `end` to `"\n"` instead of `os.linesep`, preventing `\r\r\n` on Windows text streams that already translate `\n`.
+- `SGRString.header()` now preserves `is_error`, `force_prefix`, and `force_sgr` on its padded copy instead of resetting them.
+- `SGROutput.header()` now raises `ValueError("Exactly one string is required for the header")` for an empty output instead of an `IndexError`.
 
 ## [0.11.0] - 2025-11-10
 

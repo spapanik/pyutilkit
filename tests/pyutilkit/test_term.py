@@ -1,4 +1,3 @@
-import os
 from typing import NamedTuple
 from unittest import mock
 
@@ -54,14 +53,14 @@ def test_sgr_string_right_multiplication() -> None:
 @pytest.mark.parametrize(
     ("force_sgr", "force_prefix", "is_error", "expected_stdout", "excepted_stderr"),
     [
-        (False, False, False, f"*{os.linesep}", ""),
-        (True, False, False, f"\x1b[1m\x1b[31m*\x1b[0m{os.linesep}", ""),
-        (False, True, False, f"x*x{os.linesep}", ""),
-        (True, True, False, f"x\x1b[1m\x1b[31m*\x1b[0mx{os.linesep}", ""),
-        (False, False, True, "", f"*{os.linesep}"),
-        (True, False, True, "", f"\x1b[1m\x1b[31m*\x1b[0m{os.linesep}"),
-        (False, True, True, "", f"x*x{os.linesep}"),
-        (True, True, True, "", f"x\x1b[1m\x1b[31m*\x1b[0mx{os.linesep}"),
+        (False, False, False, "*\n", ""),
+        (True, False, False, "\x1b[1m\x1b[31m*\x1b[0m\n", ""),
+        (False, True, False, "x*x\n", ""),
+        (True, True, False, "x\x1b[1m\x1b[31m*\x1b[0mx\n", ""),
+        (False, False, True, "", "*\n"),
+        (True, False, True, "", "\x1b[1m\x1b[31m*\x1b[0m\n"),
+        (False, True, True, "", "x*x\n"),
+        (True, True, True, "", "x\x1b[1m\x1b[31m*\x1b[0mx\n"),
     ],
 )
 def test_sgr_string_print(
@@ -98,7 +97,7 @@ def test_sgr_string_print_full_color(capsys: mock.MagicMock) -> None:
     )
     sgr_string.print(full_color=True)
     captured = capsys.readouterr()
-    assert captured.out == f"\x1b[1m\x1b[31mx*x\x1b[0m{os.linesep}"
+    assert captured.out == "\x1b[1m\x1b[31mx*x\x1b[0m\n"
     assert captured.err == ""
 
 
@@ -109,11 +108,7 @@ def test_sgr_output_print(capsys: mock.MagicMock) -> None:
     output.print()
     captured = capsys.readouterr()
     expected = (
-        "\x1b[1m\x1b[31m"
-        "Hello, World!"
-        "\x1b[0m\x1b[3m\x1b[34m"
-        "Hello, World!"
-        f"\x1b[0m{os.linesep}"
+        "\x1b[1m\x1b[31mHello, World!\x1b[0m\x1b[3m\x1b[34mHello, World!\x1b[0m\n"
     )
     assert captured.out == expected
     assert captured.err == ""
@@ -127,11 +122,7 @@ def test_sgr_output_print_when_stdout_is_a_tty(capsys: mock.MagicMock) -> None:
     output.print()
     captured = capsys.readouterr()
     expected = (
-        "\x1b[1m\x1b[31m"
-        "Hello, World!"
-        "\x1b[0m\x1b[3m\x1b[34m"
-        "Hello, World!"
-        f"\x1b[0m{os.linesep}"
+        "\x1b[1m\x1b[31mHello, World!\x1b[0m\x1b[3m\x1b[34mHello, World!\x1b[0m\n"
     )
     assert captured.out == expected
     assert captured.err == ""
@@ -142,7 +133,7 @@ def test_sgr_output_header(capsys: mock.MagicMock) -> None:
     output = SGROutput([sgr_string_1])
     output.header()
     captured = capsys.readouterr()
-    assert captured.out == f"Hello, World!{os.linesep}"
+    assert captured.out == "Hello, World!\n"
     assert captured.err == ""
 
 
@@ -156,7 +147,7 @@ def test_sgr_output_header_with_a_tty(columns: int, capsys: mock.MagicMock) -> N
     ):
         output.header()
     captured = capsys.readouterr()
-    assert captured.out == f"Hello, World!{os.linesep}"
+    assert captured.out == "Hello, World!\n"
     assert captured.err == ""
 
 
@@ -164,15 +155,60 @@ def test_sgr_output_header_multi_string() -> None:
     sgr_string_1 = SGRString("Hello, World!", params=[SGRCodes.BOLD, SGRCodes.RED])
     sgr_string_2 = SGRString("Hello, World!", params=[SGRCodes.ITALIC, SGRCodes.BLUE])
     output = SGROutput([sgr_string_1, sgr_string_2])
-    with pytest.raises(ValueError, match="Only one string is allowed for the header"):
+    with pytest.raises(
+        ValueError, match="Exactly one string is required for the header"
+    ):
         output.header()
+
+
+def test_sgr_output_header_empty() -> None:
+    output = SGROutput([])
+    with pytest.raises(
+        ValueError, match="Exactly one string is required for the header"
+    ):
+        output.header()
+
+
+def test_sgr_string_header_preserves_state_early_return(
+    capsys: mock.MagicMock,
+) -> None:
+    sgr_string = SGRString(
+        "Hello, World!",
+        params=[SGRCodes.BOLD, SGRCodes.RED],
+        force_sgr=True,
+        force_prefix=True,
+        is_error=True,
+    )
+    with mock.patch("os.get_terminal_size", side_effect=OSError):
+        sgr_string.header()
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == "\x1b[1m\x1b[31mHello, World!\x1b[0m\n"
+
+
+def test_sgr_string_header_preserves_state_padded(capsys: mock.MagicMock) -> None:
+    sgr_string = SGRString(
+        "Hi",
+        params=[SGRCodes.BOLD, SGRCodes.RED],
+        force_sgr=True,
+        force_prefix=True,
+        is_error=True,
+    )
+    with mock.patch(
+        "os.get_terminal_size",
+        new=mock.MagicMock(return_value=TerminalSize(10, 24)),
+    ):
+        sgr_string.header()
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == "    \x1b[1m\x1b[31mHi\x1b[0m    \n"
 
 
 def test_sgr_output_print_objects(capsys: mock.MagicMock) -> None:
     output = SGROutput([1, None])
     output.print()
     captured = capsys.readouterr()
-    assert captured.out == f"1None{os.linesep}"
+    assert captured.out == "1None\n"
     assert captured.err == ""
 
 
@@ -187,7 +223,7 @@ def test_force_sgr_via_env_truthy(
     sgr_string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED])
     sgr_string.print()
     captured = capsys.readouterr()
-    assert captured.out == f"\x1b[1m\x1b[31m*\x1b[0m{os.linesep}"
+    assert captured.out == "\x1b[1m\x1b[31m*\x1b[0m\n"
 
 
 @pytest.mark.parametrize(
@@ -201,14 +237,14 @@ def test_force_sgr_via_env_falsy(
     sgr_string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED])
     sgr_string.print()
     captured = capsys.readouterr()
-    assert captured.out == f"*{os.linesep}"
+    assert captured.out == "*\n"
 
 
 def test_force_sgr_via_env_unset(capsys: mock.MagicMock) -> None:
     sgr_string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED])
     sgr_string.print()
     captured = capsys.readouterr()
-    assert captured.out == f"*{os.linesep}"
+    assert captured.out == "*\n"
 
 
 @pytest.mark.parametrize(
@@ -222,7 +258,7 @@ def test_force_prefix_via_env_truthy(
     sgr_string = SGRString("*", prefix="x", suffix="x")
     sgr_string.print()
     captured = capsys.readouterr()
-    assert captured.out == f"x*x{os.linesep}"
+    assert captured.out == "x*x\n"
 
 
 @pytest.mark.parametrize(
@@ -236,14 +272,14 @@ def test_force_prefix_via_env_falsy(
     sgr_string = SGRString("*", prefix="x", suffix="x")
     sgr_string.print()
     captured = capsys.readouterr()
-    assert captured.out == f"*{os.linesep}"
+    assert captured.out == "*\n"
 
 
 def test_force_prefix_via_env_unset(capsys: mock.MagicMock) -> None:
     sgr_string = SGRString("*", prefix="x", suffix="x")
     sgr_string.print()
     captured = capsys.readouterr()
-    assert captured.out == f"*{os.linesep}"
+    assert captured.out == "*\n"
 
 
 def test_force_sgr_constructor_overrides_env(
@@ -253,7 +289,7 @@ def test_force_sgr_constructor_overrides_env(
     sgr_string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED], force_sgr=True)
     sgr_string.print()
     captured = capsys.readouterr()
-    assert captured.out == f"\x1b[1m\x1b[31m*\x1b[0m{os.linesep}"
+    assert captured.out == "\x1b[1m\x1b[31m*\x1b[0m\n"
 
 
 def test_force_prefix_constructor_overrides_env(
@@ -263,4 +299,4 @@ def test_force_prefix_constructor_overrides_env(
     sgr_string = SGRString("*", prefix="x", suffix="x", force_prefix=True)
     sgr_string.print()
     captured = capsys.readouterr()
-    assert captured.out == f"x*x{os.linesep}"
+    assert captured.out == "x*x\n"

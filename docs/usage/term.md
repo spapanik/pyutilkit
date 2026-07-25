@@ -14,7 +14,7 @@ Terminal formatting can be complex due to:
 The `term` module simplifies this by providing:
 
 - Easy-to-use color and style constants
-- Automatic TTY detection (strips colors when not in a terminal)
+- TTY-aware `.print()` methods that strip colors outside a terminal
 - Smart printing to stdout/stderr
 - Header formatting with automatic centering
 - Environment variable overrides for forcing colors
@@ -28,15 +28,25 @@ from pyutilkit.term import SGRString, SGRCodes
 
 # Create a simple styled string
 message = SGRString("Hello, World!", params=[SGRCodes.BOLD])
-print(message)  # Bold text in terminal, plain text when piped
+message.print()  # Writes styled text to stdout on a TTY, plain text when piped
 
-# Multiple styles
-error_msg = SGRString("Error: File not found", params=[SGRCodes.BOLD, SGRCodes.RED])
-error_msg.print()  # Prints to stderr (if is_error=True) or stdout
+# Multiple styles routed to stderr
+error_msg = SGRString(
+    "Error: File not found",
+    params=[SGRCodes.BOLD, SGRCodes.RED],
+    is_error=True,
+)
+error_msg.print()  # Writes to stderr
 
 # With prefix and suffix
-item = SGRString("✓ Success", prefix="[APP] ", suffix="\n", params=[SGRCodes.GREEN])
-item.print()  # [APP] ✓ Success
+item = SGRString(
+    "✓ Success",
+    prefix="[APP] ",
+    suffix="!",
+    params=[SGRCodes.GREEN],
+    force_prefix=True,
+)
+item.print()  # Always writes: [APP] ✓ Success!
 ```
 
 ### Available Styles and Colors
@@ -94,7 +104,7 @@ from pyutilkit.term import SGRString, SGRCodes
 # String multiplication preserves formatting
 star = SGRString("*", params=[SGRCodes.YELLOW])
 stars = star * 5
-print(stars)  # ***** (all yellow)
+stars.print()  # Yellow on a TTY, plain when piped
 
 # Length calculation excludes ANSI codes
 text = SGRString("Hello", params=[SGRCodes.BOLD, SGRCodes.RED])
@@ -144,6 +154,26 @@ error = SGRString(
 error.print()
 ```
 
+### Styling Prefixes and Suffixes
+
+By default, SGR styling applies only to the main text. Pass `full_color=True`
+to include the prefix and suffix inside the styled range:
+
+```python
+from pyutilkit.term import SGRString, SGRCodes
+
+status = SGRString(
+    "Ready",
+    prefix="[STATUS] ",
+    suffix="!",
+    params=[SGRCodes.GREEN],
+    force_prefix=True,
+    force_sgr=True,
+)
+status.print(full_color=True)
+# Emits: \x1b[32m[STATUS] Ready!\x1b[0m
+```
+
 ### Centered Headers
 
 ```python
@@ -155,7 +185,7 @@ title.header()  # Centers text based on terminal width
 
 # Custom padding
 title.header(padding="=", left_spaces=2, right_spaces=2)
-# == Application Started ==
+# When terminal size is available, fills its width with "=" around the title
 ```
 
 ### TTY Detection and Overrides
@@ -165,25 +195,30 @@ from pyutilkit.term import SGRString, SGRCodes
 import os
 
 # By default, colors are stripped when output is not a TTY
-message = SGRString("Colored text", params=[SGRCodes.RED])
-message.print()  # Colors if TTY, plain if piped
+regular_message = SGRString("Colored text", params=[SGRCodes.RED])
+regular_message.print()  # Colors on a TTY, plain when piped
 
-# Force colors even when piped
-os.environ["PY_UTIL_FORCE_SGR"] = "1"
-message.print()  # Always includes colors
+# Set overrides before constructing the affected object
+os.environ["PY_UTIL_FORCE_SGR"] = "yes"
+forced_message = SGRString("Colored text", params=[SGRCodes.RED])
+forced_message.print()  # Includes colors even when piped
 
-# Force prefix/suffix even when piped
-os.environ["PY_UTIL_FORCE_PREFIX"] = "1"
+# Force the prefix and suffix even when piped
+os.environ["PY_UTIL_FORCE_PREFIX"] = "TRUE"
 tagged = SGRString("msg", prefix="[TAG] ", params=[SGRCodes.BOLD])
 tagged.print()  # Always includes [TAG] prefix
 ```
+
+Environment overrides are read when each `SGRString` is constructed; changing
+an environment variable does not alter an existing instance. Accepted truthy
+values are `1`, `true`, and `yes`, case-insensitively.
 
 ## Real-World Examples
 
 ### CLI Progress Indicator
 
 ```python
-from pyutilkit.term import SGRString, SGRCodes
+from pyutilkit.term import SGRString, SGROutput, SGRCodes
 import sys
 import time
 
@@ -209,15 +244,15 @@ class ProgressBar:
         # Build percentage text
         pct_text = SGRString(f"{percentage * 100:5.1f}%", params=[SGRCodes.BOLD])
 
-        # Combine and print
-        output = SGRString(f"\r[{bar}] {pct_text}", params=[])
+        # Keep each styled component separate so TTY filtering still applies
+        output = SGROutput(["\r[", bar, "] ", pct_text])
         output.print(end="")
         sys.stdout.flush()
 
     def complete(self):
         """Mark progress as complete."""
         self.update(self.total)
-        done = SGRString(" ✓ Done\n", params=[SGRCodes.GREEN, SGRCodes.BOLD])
+        done = SGRString(" ✓ Done", params=[SGRCodes.GREEN, SGRCodes.BOLD])
         done.print()
 
 
@@ -229,7 +264,7 @@ for i in range(101):
 progress.complete()
 ```
 
-### Log Formatter
+### TTY-Aware Log Handler
 
 ```python
 from pyutilkit.term import SGRString, SGROutput, SGRCodes
@@ -237,8 +272,8 @@ from datetime import datetime
 import logging
 
 
-class ColorFormatter(logging.Formatter):
-    """Colored log formatter for console output."""
+class ColorHandler(logging.Handler):
+    """Logging handler with TTY-aware colored output."""
 
     LEVEL_COLORS = {
         logging.DEBUG: SGRCodes.BLUE,
@@ -248,32 +283,24 @@ class ColorFormatter(logging.Formatter):
         logging.CRITICAL: SGRCodes.RED_BRIGHT,
     }
 
-    def format(self, record: logging.LogRecord) -> str:
-        """Format log record with colors."""
-        # Get color for level
+    def emit(self, record: logging.LogRecord) -> None:
+        """Write one colored log record to stderr."""
         color = self.LEVEL_COLORS.get(record.levelno, SGRCodes.GREY)
-
-        # Format timestamp
         timestamp = datetime.fromtimestamp(record.created)
         ts_str = SGRString(timestamp.strftime("%H:%M:%S"), params=[SGRCodes.GREY])
-
-        # Format level
         level_str = SGRString(record.levelname.ljust(8), params=[color, SGRCodes.BOLD])
-
-        # Format message
         msg_str = SGRString(record.getMessage(), params=[])
 
-        # Combine
-        output = SGROutput([ts_str, level_str, msg_str])
-        return str(output)
+        output = SGROutput([ts_str, level_str, msg_str], is_error=True)
+        output.print(sep=" ")
 
 
 # Configure logger
-logger = logging.getLogger(__name__)
-handler = logging.StreamHandler()
-handler.setFormatter(ColorFormatter())
-logger.addHandler(handler)
+logger = logging.getLogger("color-example")
+logger.handlers.clear()
+logger.addHandler(ColorHandler())
 logger.setLevel(logging.DEBUG)
+logger.propagate = False
 
 # Usage
 logger.debug("Debug message")
@@ -305,10 +332,8 @@ class TableFormatter:
             if i < len(self.col_widths):
                 self.col_widths[i] = max(self.col_widths[i], len(str(cell)))
 
-    def render(self) -> str:
-        """Render table as formatted string."""
-        lines = []
-
+    def print(self) -> None:
+        """Print the table with TTY-aware colors."""
         # Header row
         header_cells = []
         for i, header in enumerate(self.headers):
@@ -318,11 +343,11 @@ class TableFormatter:
             header_cells.append(cell)
 
         header_output = SGROutput(header_cells)
-        lines.append(str(header_output).replace(" ", " │ "))
+        header_output.print(sep=" │ ")
 
         # Separator
         separator = "─" * (sum(self.col_widths) + 3 * (len(self.col_widths) - 1))
-        lines.append(SGRString(separator, params=[SGRCodes.GREY]).__str__())
+        SGRString(separator, params=[SGRCodes.GREY]).print()
 
         # Data rows
         for row in self.rows:
@@ -333,9 +358,7 @@ class TableFormatter:
                     cells.append(cell)
 
             row_output = SGROutput(cells)
-            lines.append(str(row_output).replace(" ", " │ "))
-
-        return "\n".join(lines)
+            row_output.print(sep=" │ ")
 
 
 # Example usage
@@ -344,10 +367,10 @@ table.add_row(["Alice", 30, "New York"])
 table.add_row(["Bob", 25, "London"])
 table.add_row(["Charlie", 35, "Tokyo"])
 
-print(table.render())
+table.print()
 # Output:
 # Name    │ Age │ City
-# ───────────────────────
+# ────────────────────────
 # Alice   │ 30  │ New York
 # Bob     │ 25  │ London
 # Charlie │ 35  │ Tokyo
@@ -356,8 +379,9 @@ print(table.render())
 ### Interactive Menu System
 
 ```python
-from pyutilkit.term import SGRString, SGRCodes
-import sys
+from collections.abc import Callable
+
+from pyutilkit.term import SGRString, SGROutput, SGRCodes
 
 
 class Menu:
@@ -365,9 +389,9 @@ class Menu:
 
     def __init__(self, title: str):
         self.title = title
-        self.options: list[tuple[str, callable]] = []
+        self.options: list[tuple[str, Callable[[], None]]] = []
 
-    def add_option(self, label: str, action: callable):
+    def add_option(self, label: str, action: Callable[[], None]):
         """Add menu option."""
         self.options.append((label, action))
 
@@ -447,7 +471,6 @@ menu.display()
 
 ```python
 from pyutilkit.term import SGRString, SGRCodes, SGROutput
-import os
 
 
 class StatusDashboard:
@@ -517,7 +540,7 @@ dashboard.display()
 
 !!! warning "TTY Detection"
 
-    When piping output to a file or another command, ANSI codes are automatically stripped. This is usually desired behavior, but you can override it with `PY_UTIL_FORCE_SGR=1`.
+    `SGRString.print()` and `SGROutput.print()` strip ANSI codes when output is not attached to a TTY. Converting an `SGRString` with `str()` always retains its codes. Set `PY_UTIL_FORCE_SGR=1` before construction when piped output must retain styling.
 
 !!! warning "Windows Compatibility"
 
