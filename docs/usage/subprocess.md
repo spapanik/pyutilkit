@@ -21,10 +21,10 @@ from pyutilkit.subprocess import run_command
 # Run a simple command
 result = run_command(["echo", "Hello, World!"])
 
-print(result.stdout)      # b"Hello, World!\n"
+print(result.stdout)  # b"Hello, World!\n"
 print(result.returncode)  # 0
-print(result.pid)         # 12345 (process ID)
-print(result.elapsed)     # Timing object (e.g., "5.2ms")
+print(result.pid)  # 12345 (process ID)
+print(result.elapsed)  # Timing object (e.g., "5.2ms")
 ```
 
 ### Commands with Arguments
@@ -68,18 +68,12 @@ from pathlib import Path
 import os
 
 # Run command in specific directory
-result = run_command(
-    ["git", "status"],
-    cwd=Path("/path/to/repo")
-)
+result = run_command(["git", "status"], cwd=Path("/path/to/repo"))
 
 # Run with custom environment variables
 custom_env = os.environ.copy()
 custom_env["MY_VAR"] = "my_value"
-result = run_command(
-    ["python", "script.py"],
-    env=custom_env
-)
+result = run_command(["python", "script.py"], env=custom_env)
 ```
 
 ### Handling Command Failures
@@ -99,9 +93,9 @@ def run_with_error_handling(command: list[str]) -> dict:
         )
 
     return {
-        'output': result.stdout.decode(),
-        'elapsed': result.elapsed,
-        'pid': result.pid
+        "output": result.stdout.decode(),
+        "elapsed": result.elapsed,
+        "pid": result.pid,
     }
 
 
@@ -148,10 +142,10 @@ class BuildRunner:
 
     def run_step(self, name: str, command: list[str]) -> bool:
         """Run a build step and report results."""
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Running: {name}")
         print(f"Command: {' '.join(command)}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         result = run_command(command, cwd=self.project_dir)
 
@@ -200,6 +194,7 @@ from datetime import datetime
 @dataclass
 class SystemMetrics:
     """System metrics collected from commands."""
+
     timestamp: datetime
     cpu_usage: float
     memory_usage: float
@@ -227,21 +222,21 @@ class SystemMonitor:
             timestamp=datetime.now(),
             cpu_usage=cpu_line,
             memory_usage=mem_info,
-            disk_usage=disk_info
+            disk_usage=disk_info,
         )
 
     def _parse_cpu(self, output: str) -> float:
         """Parse CPU usage from top output."""
         # Simplified parsing - adjust based on your system
-        for line in output.split('\n'):
-            if 'CPU' in line:
+        for line in output.split("\n"):
+            if "CPU" in line:
                 # Extract CPU percentage (implementation depends on OS)
                 return 0.0  # Placeholder
         return 0.0
 
     def _parse_memory(self, output: str) -> float:
         """Parse memory usage from free output."""
-        lines = output.strip().split('\n')
+        lines = output.strip().split("\n")
         if len(lines) >= 2:
             parts = lines[1].split()
             if len(parts) >= 3:
@@ -252,11 +247,11 @@ class SystemMonitor:
 
     def _parse_disk(self, output: str) -> float:
         """Parse disk usage from df output."""
-        lines = output.strip().split('\n')
+        lines = output.strip().split("\n")
         if len(lines) >= 2:
             parts = lines[1].split()
             if len(parts) >= 5:
-                usage_str = parts[4].replace('%', '')
+                usage_str = parts[4].replace("%", "")
                 return float(usage_str)
         return 0.0
 
@@ -282,6 +277,7 @@ from dataclasses import dataclass
 @dataclass
 class RepoInfo:
     """Git repository information."""
+
     branch: str
     commit: str
     status: str
@@ -298,22 +294,17 @@ class GitAnalyzer:
         """Get comprehensive repository information."""
         # Get current branch
         branch_result = run_command(
-            ["git", "branch", "--show-current"],
-            cwd=self.repo_path
+            ["git", "branch", "--show-current"], cwd=self.repo_path
         )
         branch = branch_result.stdout.decode().strip()
 
         # Get current commit
-        commit_result = run_command(
-            ["git", "rev-parse", "HEAD"],
-            cwd=self.repo_path
-        )
+        commit_result = run_command(["git", "rev-parse", "HEAD"], cwd=self.repo_path)
         commit = commit_result.stdout.decode().strip()
 
         # Check for changes
         status_result = run_command(
-            ["git", "status", "--porcelain"],
-            cwd=self.repo_path
+            ["git", "status", "--porcelain"], cwd=self.repo_path
         )
         status_output = status_result.stdout.decode().strip()
         has_changes = len(status_output) > 0
@@ -322,32 +313,29 @@ class GitAnalyzer:
             branch=branch or "DETACHED",
             commit=commit,
             status=status_output,
-            has_changes=has_changes
+            has_changes=has_changes,
         )
 
     def get_commit_history(self, count: int = 10) -> list[dict]:
         """Get recent commit history."""
         result = run_command(
-            [
-                "git", "log",
-                f"-{count}",
-                "--format=%H|%s|%an|%ad",
-                "--date=short"
-            ],
-            cwd=self.repo_path
+            ["git", "log", f"-{count}", "--format=%H|%s|%an|%ad", "--date=short"],
+            cwd=self.repo_path,
         )
 
         commits = []
-        for line in result.stdout.decode().strip().split('\n'):
+        for line in result.stdout.decode().strip().split("\n"):
             if line:
-                parts = line.split('|')
+                parts = line.split("|")
                 if len(parts) == 4:
-                    commits.append({
-                        'hash': parts[0],
-                        'message': parts[1],
-                        'author': parts[2],
-                        'date': parts[3]
-                    })
+                    commits.append(
+                        {
+                            "hash": parts[0],
+                            "message": parts[1],
+                            "author": parts[2],
+                            "date": parts[3],
+                        }
+                    )
 
         return commits
 
@@ -422,51 +410,36 @@ class Deployer:
 
     def _verify_clean_repo(self) -> bool:
         """Verify repository is clean."""
-        result = run_command(
-            ["git", "status", "--porcelain"],
-            cwd=self.app_dir
-        )
+        result = run_command(["git", "status", "--porcelain"], cwd=self.app_dir)
         return len(result.stdout.decode().strip()) == 0
 
     def _run_tests(self) -> bool:
         """Run test suite."""
-        result = run_command(
-            ["uv", "run", "pytest", "-v"],
-            cwd=self.app_dir
-        )
+        result = run_command(["uv", "run", "pytest", "-v"], cwd=self.app_dir)
         return result.returncode == 0
 
     def _build_app(self) -> bool:
         """Build application."""
-        result = run_command(
-            ["uv", "build"],
-            cwd=self.app_dir
-        )
+        result = run_command(["uv", "build"], cwd=self.app_dir)
         return result.returncode == 0
 
     def _deploy_to_server(self) -> bool:
         """Deploy built artifacts to server."""
         # Example using rsync
-        result = run_command([
-            "rsync", "-avz",
-            "dist/",
-            f"{self.remote_host}:/opt/app/"
-        ])
+        result = run_command(
+            ["rsync", "-avz", "dist/", f"{self.remote_host}:/opt/app/"]
+        )
         return result.returncode == 0
 
     def _verify_deployment(self) -> bool:
         """Verify deployment on remote server."""
-        result = run_command([
-            "ssh", self.remote_host,
-            "systemctl is-active myapp"
-        ])
+        result = run_command(["ssh", self.remote_host, "systemctl is-active myapp"])
         return result.returncode == 0 and b"active" in result.stdout
 
 
 # Example usage
 deployer = Deployer(
-    app_dir=Path("/path/to/app"),
-    remote_host="user@production.example.com"
+    app_dir=Path("/path/to/app"), remote_host="user@production.example.com"
 )
 
 success = deployer.deploy()
@@ -477,24 +450,22 @@ if not success:
 ## Common Pitfalls
 
 !!! warning "Shell Execution"
-    `run_command` never invokes a shell implicitly. If shell syntax is genuinely required, invoke the platform's shell explicitly and never interpolate untrusted input into its command string.
+`run_command` never invokes a shell implicitly. If shell syntax is genuinely required, invoke the platform's shell explicitly and never interpolate untrusted input into its command string.
 
 !!! warning "Large Output"
-    For commands that produce very large output, consider redirecting to files instead of capturing in memory. The current implementation stores all output in memory.
+For commands that produce very large output, consider redirecting to files instead of capturing in memory. The current implementation stores all output in memory.
 
 !!! tip "Timeout Handling"
-    `run_command` does not currently expose a timeout parameter. Use an external timeout mechanism when a deadline is required; `result.elapsed` is available only after the child exits.
+`run_command` does not currently expose a timeout parameter. Use an external timeout mechanism when a deadline is required; `result.elapsed` is available only after the child exits.
 
 !!! tip "Cross-Platform Compatibility"
-    Executable names and arguments may differ between operating systems. Use platform-specific commands or cross-platform alternatives when necessary.
+Executable names and arguments may differ between operating systems. Use platform-specific commands or cross-platform alternatives when necessary.
 
 ## API Reference
 
 ::: pyutilkit.subprocess
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: false
-      members:
-        - run_command
-        - ProcessOutput
+handler: python
+options:
+show_root_heading: true
+show_source: false
+members: - run_command - ProcessOutput

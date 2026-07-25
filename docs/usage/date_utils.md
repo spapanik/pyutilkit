@@ -67,6 +67,7 @@ print(epoch_tokyo)  # 1970-01-01 09:00:00+09:00
 
 # Current timestamp
 import time
+
 current = from_timestamp(time.time(), ZoneInfo("America/New_York"))
 print(current)
 ```
@@ -194,33 +195,20 @@ class TaskScheduler:
         # Convert to UTC for storage/comparison
         utc_time = convert_timezone(local_time, ZoneInfo("UTC"))
 
-        self.tasks.append({
-            'name': name,
-            'scheduled_utc': utc_time,
-            'timezone': timezone
-        })
+        self.tasks.append(
+            {"name": name, "scheduled_utc": utc_time, "timezone": timezone}
+        )
 
     def get_due_tasks(self):
         """Get tasks that are due now (in UTC)."""
         current_utc = now(ZoneInfo("UTC"))
-        return [
-            task for task in self.tasks
-            if task['scheduled_utc'] <= current_utc
-        ]
+        return [task for task in self.tasks if task["scheduled_utc"] <= current_utc]
 
 
 # Example usage
 scheduler = TaskScheduler()
-scheduler.schedule_task(
-    "Daily Report",
-    "2024-01-15T09:00:00",
-    "America/New_York"
-)
-scheduler.schedule_task(
-    "Team Standup",
-    "2024-01-15T10:00:00Z",
-    "UTC"
-)
+scheduler.schedule_task("Daily Report", "2024-01-15T09:00:00", "America/New_York")
+scheduler.schedule_task("Team Standup", "2024-01-15T10:00:00Z", "UTC")
 
 due_tasks = scheduler.get_due_tasks()
 for task in due_tasks:
@@ -246,17 +234,19 @@ def normalize_log_timestamps(log_entries: list[dict]) -> list[dict]:
     normalized = []
     for entry in log_entries:
         # Parse timestamp in source timezone
-        source_tz = ZoneInfo(entry['source_timezone'])
-        local_dt = from_iso(entry['timestamp'], source_tz)
+        source_tz = ZoneInfo(entry["source_timezone"])
+        local_dt = from_iso(entry["timestamp"], source_tz)
 
         # Convert to UTC
         utc_dt = convert_timezone(local_dt, ZoneInfo("UTC"))
 
-        normalized.append({
-            **entry,
-            'timestamp_utc': utc_dt.isoformat(),
-            'original_timestamp': entry['timestamp']
-        })
+        normalized.append(
+            {
+                **entry,
+                "timestamp_utc": utc_dt.isoformat(),
+                "original_timestamp": entry["timestamp"],
+            }
+        )
 
     return normalized
 
@@ -264,53 +254,46 @@ def normalize_log_timestamps(log_entries: list[dict]) -> list[dict]:
 # Example: Logs from servers in different timezones
 logs = [
     {
-        'message': 'Server started',
-        'timestamp': '2024-01-15T10:30:00',
-        'source_timezone': 'US/Eastern'
+        "message": "Server started",
+        "timestamp": "2024-01-15T10:30:00",
+        "source_timezone": "US/Eastern",
     },
     {
-        'message': 'Deployment complete',
-        'timestamp': '2024-01-15T18:45:00+09:00',
-        'source_timezone': 'Asia/Tokyo'
+        "message": "Deployment complete",
+        "timestamp": "2024-01-15T18:45:00+09:00",
+        "source_timezone": "Asia/Tokyo",
     },
     {
-        'message': 'Backup finished',
-        'timestamp': '2024-01-15T15:20:00Z',
-        'source_timezone': 'UTC'
-    }
+        "message": "Backup finished",
+        "timestamp": "2024-01-15T15:20:00Z",
+        "source_timezone": "UTC",
+    },
 ]
 
 normalized_logs = normalize_log_timestamps(logs)
-for log in sorted(normalized_logs, key=lambda x: x['timestamp_utc']):
+for log in sorted(normalized_logs, key=lambda x: x["timestamp_utc"]):
     print(f"{log['timestamp_utc']} - {log['message']}")
 ```
 
 ## Common Pitfalls
 
 !!! warning "Naive vs Aware Datetimes"
-    Always ensure your datetimes are timezone-aware before converting. Use `add_timezone()` for naive datetimes and `convert_timezone()` for aware datetimes. Mixing them up will raise `ValueError`.
+Always ensure your datetimes are timezone-aware before converting. Use `add_timezone()` for naive datetimes and `convert_timezone()` for aware datetimes. Mixing them up will raise `ValueError`.
 
 !!! warning "DST Transitions"
-    Be careful during Daylight Saving Time transitions. The same wall-clock time might occur twice or not at all. The `zoneinfo` module handles this, but be aware of potential ambiguities.
+Be careful during Daylight Saving Time transitions. The same wall-clock time might occur twice or not at all. The `zoneinfo` module handles this, but be aware of potential ambiguities.
 
 !!! tip "Always Store in UTC"
-    Store timestamps in UTC and convert to local time only for display. This avoids confusion and makes comparisons straightforward.
+Store timestamps in UTC and convert to local time only for display. This avoids confusion and makes comparisons straightforward.
 
 !!! tip "Use from_iso() for API Responses"
-    When parsing timestamps from APIs, always use `from_iso()` instead of `datetime.fromisoformat()` directly. It properly handles the Zulu timezone ("Z") which is valid ISO 8601 but not supported by Python's standard parser.
+When parsing timestamps from APIs, always use `from_iso()` instead of `datetime.fromisoformat()` directly. It properly handles the Zulu timezone ("Z") which is valid ISO 8601 but not supported by Python's standard parser.
 
 ## API Reference
 
 ::: pyutilkit.date_utils
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: false
-      members:
-        - now
-        - from_iso
-        - from_timestamp
-        - add_timezone
-        - convert_timezone
-        - get_timezones
-        - UTC
+handler: python
+options:
+show_root_heading: true
+show_source: false
+members: - now - from_iso - from_timestamp - add_timezone - convert_timezone - get_timezones - UTC

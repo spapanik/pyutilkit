@@ -143,7 +143,7 @@ pip install -r requirements.txt
 After installation, verify that pyutilkit is working correctly:
 
 ```python
-python3 << 'EOF'
+python3 << "EOF"
 import pyutilkit
 from pyutilkit.date_utils import now
 from pyutilkit.timing import Stopwatch
@@ -154,6 +154,7 @@ print(f"pyutilkit version: {pyutilkit.__version__}")
 
 # Test timezone utilities
 from zoneinfo import ZoneInfo
+
 tokyo_time = now(ZoneInfo("Asia/Tokyo"))
 print(f"Current time in Tokyo: {tokyo_time}")
 
@@ -216,15 +217,17 @@ sudo pacman -S tzdata
 If you get `ModuleNotFoundError: No module named 'pyutilkit'`:
 
 1. Verify pyutilkit is installed:
-   ```bash
-   pip list | grep pyutilkit
-   ```
+
+    ```bash
+    pip list | grep pyutilkit
+    ```
 
 2. Check you're using the correct Python:
-   ```bash
-   which python  # macOS/Linux
-   where python  # Windows
-   ```
+
+    ```bash
+    which python  # macOS/Linux
+    where python  # Windows
+    ```
 
 3. Ensure your virtual environment is activated (if using one)
 
@@ -247,6 +250,7 @@ If timezone operations fail:
 ```python
 # Test timezone support
 from pyutilkit.date_utils import get_timezones
+
 print(f"Available timezones: {len(get_timezones())}")
 
 # Should print 400+ timezones

@@ -40,8 +40,8 @@ def safe_divide(a: int, b: int) -> float:
     return a / b
 
 
-print(safe_divide(10, 2))   # 5.0
-print(safe_divide(10, 0))   # 0.0 (default value)
+print(safe_divide(10, 2))  # 5.0
+print(safe_divide(10, 0))  # 0.0 (default value)
 ```
 
 ### Selective Exception Handling
@@ -56,13 +56,13 @@ def parse_and_double(value: str) -> int:
     return int(value) * 2
 
 
-print(parse_and_double("5"))     # 10
-print(parse_and_double("abc"))   # -1 (ValueError caught)
-print(parse_and_double(None))    # -1 (TypeError caught)
+print(parse_and_double("5"))  # 10
+print(parse_and_double("abc"))  # -1 (ValueError caught)
+print(parse_and_double(None))  # -1 (TypeError caught)
 
 # This will still raise an exception (not in the handled list)
 try:
-    parse_and_double(1/0)  # ZeroDivisionError
+    parse_and_double(1 / 0)  # ZeroDivisionError
 except ZeroDivisionError:
     print("ZeroDivisionError was not caught")
 ```
@@ -80,7 +80,7 @@ logging.basicConfig(level=logging.DEBUG)
 @handle_exceptions(default=None, log_level="error")
 def critical_operation(data: dict) -> str:
     """Log failures as errors."""
-    return data['key']
+    return data["key"]
 
 
 result = critical_operation({})  # Logs as ERROR level
@@ -111,7 +111,7 @@ class DataProcessor:
     def parse_price(self, price_str: str) -> float:
         """Parse price string to float."""
         # Remove currency symbols and commas
-        cleaned = price_str.replace('$', '').replace(',', '')
+        cleaned = price_str.replace("$", "").replace(",", "")
         return float(cleaned)
 
     @handle_exceptions(exceptions=Exception, default=[])
@@ -121,10 +121,10 @@ class DataProcessor:
         for record in records:
             try:
                 processed_record = {
-                    'name': self.extract_field(record, 'name'),
-                    'price': self.parse_price(record.get('price', '0')),
+                    "name": self.extract_field(record, "name"),
+                    "price": self.parse_price(record.get("price", "0")),
                 }
-                if processed_record['name'] is not None:
+                if processed_record["name"] is not None:
                     processed.append(processed_record)
             except Exception:
                 continue
@@ -134,10 +134,10 @@ class DataProcessor:
 # Example usage
 processor = DataProcessor()
 records = [
-    {'name': 'Product A', 'price': '$10.99'},
-    {'name': 'Product B', 'price': 'invalid'},  # Will use default 0.0
-    {'price': '$5.00'},  # Missing name - will be skipped
-    {'name': 'Product C', 'price': '$1,234.56'},
+    {"name": "Product A", "price": "$10.99"},
+    {"name": "Product B", "price": "invalid"},  # Will use default 0.0
+    {"price": "$5.00"},  # Missing name - will be skipped
+    {"name": "Product C", "price": "$1,234.56"},
 ]
 
 results = processor.process_records(records)
@@ -165,7 +165,7 @@ class APIClient:
     @handle_exceptions(
         exceptions=(requests.RequestException, ConnectionError),
         default=None,
-        log_level="warning"
+        log_level="warning",
     )
     def get_data(self, endpoint: str) -> dict | None:
         """Fetch data from API endpoint."""
@@ -211,7 +211,7 @@ class FileProcessor:
     @handle_exceptions(exceptions=(json.JSONDecodeError, IOError), default={})
     def load_json(self, filepath: Path) -> dict:
         """Load JSON file safely."""
-        with open(filepath, 'r') as f:
+        with open(filepath, "r") as f:
             return json.load(f)
 
     @handle_exceptions(exceptions=OSError, default=None)
@@ -221,13 +221,10 @@ class FileProcessor:
             return None
         return self.load_json(config_path)
 
-    @handle_exceptions(
-        exceptions=(KeyError, TypeError, ValueError),
-        default="unknown"
-    )
+    @handle_exceptions(exceptions=(KeyError, TypeError, ValueError), default="unknown")
     def extract_value(self, data: dict, key: str) -> str:
         """Safely extract value from nested dict."""
-        return str(data[key]['value'])
+        return str(data[key]["value"])
 
 
 # Example usage
@@ -283,10 +280,10 @@ class FileIntegrityChecker:
         """Load known file hashes."""
         hashes = {}
         if self.checksum_file.exists():
-            with open(self.checksum_file, 'r') as f:
+            with open(self.checksum_file, "r") as f:
                 for line in f:
                     if line.strip():
-                        hash_val, filename = line.strip().split('  ', 1)
+                        hash_val, filename = line.strip().split("  ", 1)
                         hashes[filename] = hash_val
         return hashes
 
@@ -310,8 +307,8 @@ class FileIntegrityChecker:
 
     def update_checksums(self, directory: Path):
         """Update checksums for all files in directory."""
-        with open(self.checksum_file, 'w') as f:
-            for filepath in directory.glob('*'):
+        with open(self.checksum_file, "w") as f:
+            for filepath in directory.glob("*"):
                 if filepath.is_file():
                     file_hash = hash_file(filepath)
                     f.write(f"{file_hash}  {filepath.name}\n")
@@ -349,16 +346,14 @@ def find_duplicates(directory: Path) -> dict[str, list[Path]]:
     hash_to_files = defaultdict(list)
 
     # Hash all files
-    for filepath in directory.rglob('*'):
+    for filepath in directory.rglob("*"):
         if filepath.is_file():
             file_hash = hash_file(filepath)
             hash_to_files[file_hash].append(filepath)
 
     # Filter to only duplicates
     duplicates = {
-        hash_val: files
-        for hash_val, files in hash_to_files.items()
-        if len(files) > 1
+        hash_val: files for hash_val, files in hash_to_files.items() if len(files) > 1
     }
 
     return duplicates
@@ -372,7 +367,9 @@ for hash_val, files in duplicates.items():
     for filepath in files:
         size_mb = filepath.stat().st_size / (1024 * 1024)
         print(f"  - {filepath} ({size_mb:.2f} MB)")
-    print(f"  Potential space savings: {(len(files) - 1) * files[0].stat().st_size / (1024*1024):.2f} MB")
+    print(
+        f"  Potential space savings: {(len(files) - 1) * files[0].stat().st_size / (1024 * 1024):.2f} MB"
+    )
 ```
 
 #### Cache Validation
@@ -395,13 +392,13 @@ class CacheManager:
     def _load_metadata(self) -> dict:
         """Load cache metadata."""
         if self.metadata_file.exists():
-            with open(self.metadata_file, 'r') as f:
+            with open(self.metadata_file, "r") as f:
                 return json.load(f)
         return {}
 
     def _save_metadata(self):
         """Save cache metadata."""
-        with open(self.metadata_file, 'w') as f:
+        with open(self.metadata_file, "w") as f:
             json.dump(self.metadata, f, indent=2)
 
     def get_cached(self, source_file: Path) -> Path | None:
@@ -411,8 +408,8 @@ class CacheManager:
 
         if cache_key in self.metadata:
             cached_info = self.metadata[cache_key]
-            if cached_info['source_hash'] == source_hash:
-                cached_file = self.cache_dir / cached_info['cached_filename']
+            if cached_info["source_hash"] == source_hash:
+                cached_file = self.cache_dir / cached_info["cached_filename"]
                 if cached_file.exists():
                     print(f"Cache hit for {source_file.name}")
                     return cached_file
@@ -428,13 +425,14 @@ class CacheManager:
 
         # Copy processed file to cache
         import shutil
+
         shutil.copy2(processed_file, cache_path)
 
         # Update metadata
         self.metadata[str(source_file)] = {
-            'source_hash': source_hash,
-            'cached_filename': cache_filename,
-            'timestamp': processed_file.stat().st_mtime
+            "source_hash": source_hash,
+            "cached_filename": cache_filename,
+            "timestamp": processed_file.stat().st_mtime,
         }
         self._save_metadata()
 
@@ -461,24 +459,22 @@ else:
 ## Common Pitfalls
 
 !!! warning "Silent Failures"
-    The `handle_exceptions` decorator can mask bugs by catching all exceptions. Always specify the exact exceptions you expect, and use appropriate log levels to ensure failures are visible during development.
+The `handle_exceptions` decorator can mask bugs by catching all exceptions. Always specify the exact exceptions you expect, and use appropriate log levels to ensure failures are visible during development.
 
 !!! tip "Use Specific Exceptions"
-    Instead of catching `Exception`, catch specific exceptions like `ValueError`, `KeyError`, etc. This makes debugging easier and prevents hiding unexpected errors.
+Instead of catching `Exception`, catch specific exceptions like `ValueError`, `KeyError`, etc. This makes debugging easier and prevents hiding unexpected errors.
 
 !!! warning "Buffer Size Trade-offs"
-    For `hash_file`, larger buffer sizes are faster but use more memory. The default (64KB) is good for most cases. Use larger buffers (1MB+) only for very large files (>1GB).
+For `hash_file`, larger buffer sizes are faster but use more memory. The default (64KB) is good for most cases. Use larger buffers (1MB+) only for very large files (>1GB).
 
 !!! tip "Hash Collisions"
-    SHA-256 collisions are extremely unlikely but theoretically possible. For critical security applications, consider additional verification methods beyond just hash comparison.
+SHA-256 collisions are extremely unlikely but theoretically possible. For critical security applications, consider additional verification methods beyond just hash comparison.
 
 ## API Reference
 
 ::: pyutilkit.files
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: false
-      members:
-        - handle_exceptions
-        - hash_file
+handler: python
+options:
+show_root_heading: true
+show_source: false
+members: - handle_exceptions - hash_file

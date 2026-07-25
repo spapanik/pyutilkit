@@ -28,8 +28,8 @@ class AppConfig(metaclass=Singleton):
         self._load_config()
 
     def _load_config(self):
-        self.settings['debug'] = False
-        self.settings['database_url'] = 'postgresql://localhost/mydb'
+        self.settings["debug"] = False
+        self.settings["database_url"] = "postgresql://localhost/mydb"
 
     def get(self, key):
         return self.settings.get(key)
@@ -79,10 +79,10 @@ class EnvironmentConfig(metaclass=Singleton):
     """Centralized environment configuration."""
 
     def __init__(self):
-        self.debug = os.getenv('DEBUG', 'false').lower() == 'true'
-        self.database_url = os.getenv('DATABASE_URL')
-        self.api_key = os.getenv('API_KEY')
-        self.max_retries = int(os.getenv('MAX_RETRIES', '3'))
+        self.debug = os.getenv("DEBUG", "false").lower() == "true"
+        self.database_url = os.getenv("DATABASE_URL")
+        self.api_key = os.getenv("API_KEY")
+        self.max_retries = int(os.getenv("MAX_RETRIES", "3"))
 
     def is_production(self):
         return not self.debug
@@ -138,7 +138,7 @@ pool.release_connection(conn)
 ### Common Pitfalls
 
 !!! warning "Testing Challenges"
-    Singletons can make testing difficult because state persists between tests. Consider resetting the singleton instance between tests:
+Singletons can make testing difficult because state persists between tests. Consider resetting the singleton instance between tests:
 
     ```python
     # In your test teardown
@@ -147,20 +147,15 @@ pool.release_connection(conn)
     ```
 
 !!! warning "Hidden Dependencies"
-    Singletons create implicit dependencies that can make code harder to understand and maintain. Use dependency injection when possible for better testability.
+Singletons create implicit dependencies that can make code harder to understand and maintain. Use dependency injection when possible for better testability.
 
-!!! tip "When NOT to Use Singletons"
-    - When you might need multiple instances in the future
-    - For simple utility functions (use modules instead)
-    - When state management becomes complex (consider a proper state management solution)
+!!! tip "When NOT to Use Singletons" - When you might need multiple instances in the future - For simple utility functions (use modules instead) - When state management becomes complex (consider a proper state management solution)
 
 ### API Reference
 
 ::: pyutilkit.classes.Singleton
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: false
-      members:
-        - __init__
-        - __call__
+handler: python
+options:
+show_root_heading: true
+show_source: false
+members: - **init** - **call**

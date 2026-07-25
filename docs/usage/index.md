@@ -4,14 +4,14 @@ Welcome to the pyutilkit usage guide! This section provides comprehensive docume
 
 ## Quick Reference
 
-| Module | Purpose | Key Features |
-|--------|---------|--------------|
-| [Classes](classes.md) | Design patterns | Thread-safe Singleton implementation |
+| Module                          | Purpose                          | Key Features                                             |
+| ------------------------------- | -------------------------------- | -------------------------------------------------------- |
+| [Classes](classes.md)           | Design patterns                  | Thread-safe Singleton implementation                     |
 | [Date Utilities](date_utils.md) | Timezone-aware datetime handling | ISO parsing, timezone conversion, cross-platform support |
-| [Files](files.md) | File operations & error handling | Exception decorator, SHA-256 file hashing |
-| [Subprocess](subprocess.md) | Enhanced command execution | Real-time output, timing, structured results |
-| [Terminal](term.md) | Terminal formatting | ANSI colors, TTY detection, smart output |
-| [Timing](timing.md) | High-precision timing | Human-readable durations, lap tracking, stopwatch |
+| [Files](files.md)               | File operations & error handling | Exception decorator, SHA-256 file hashing                |
+| [Subprocess](subprocess.md)     | Enhanced command execution       | Real-time output, timing, structured results             |
+| [Terminal](term.md)             | Terminal formatting              | ANSI colors, TTY detection, smart output                 |
+| [Timing](timing.md)             | High-precision timing            | Human-readable durations, lap tracking, stopwatch        |
 
 ## Getting Started
 
@@ -88,7 +88,7 @@ success = SGRString("✓ Success", params=[SGRCodes.GREEN, SGRCodes.BOLD])
 error = SGRString("✗ Failed", params=[SGRCodes.RED], is_error=True)
 
 success.print()  # Green bold text
-error.print()    # Red text to stderr
+error.print()  # Red text to stderr
 ```
 
 → See [Terminal Guide](term.md) for styling options
@@ -100,9 +100,11 @@ Need robust error handling without cluttering your code?
 ```python
 from pyutilkit.files import handle_exceptions
 
+
 @handle_exceptions(exceptions=(ValueError, KeyError), default=None)
 def safe_parse(data: dict) -> str | None:
-    return data['key']
+    return data["key"]
+
 
 result = safe_parse({})  # Returns None instead of raising KeyError
 ```
@@ -130,9 +132,11 @@ Need a single instance of a configuration or service class?
 ```python
 from pyutilkit.classes import Singleton
 
+
 class AppConfig(metaclass=Singleton):
     def __init__(self):
         self.settings = load_config()
+
 
 config1 = AppConfig()
 config2 = AppConfig()

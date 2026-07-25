@@ -5,6 +5,7 @@ The `timing` module provides high-precision timing utilities with human-readable
 ## Overview
 
 Measuring and displaying execution time is common in:
+
 - Performance profiling
 - Benchmarking code
 - Monitoring SLAs
@@ -12,6 +13,7 @@ Measuring and displaying execution time is common in:
 - Debugging slow operations
 
 The `timing` module makes this easy with:
+
 - Nanosecond precision using `perf_counter_ns()`
 - Automatic human-readable formatting
 - Arithmetic operations on durations
@@ -51,15 +53,15 @@ The `Timing` class automatically chooses the best unit for display:
 from pyutilkit.timing import Timing
 
 # Automatic unit selection
-print(Timing(nanoseconds=0))           # 0ns
-print(Timing(nanoseconds=100))         # 100ns
-print(Timing(nanoseconds=1500))        # 1.5µs
-print(Timing(microseconds=500))        # 500.0µs
-print(Timing(milliseconds=250))        # 250.0ms
-print(Timing(seconds=5))               # 5.00s
-print(Timing(seconds=90))              # 00:01:30
-print(Timing(hours=25))                # 1d 01:00:00
-print(Timing(days=10))                 # 10d 00:00:00
+print(Timing(nanoseconds=0))  # 0ns
+print(Timing(nanoseconds=100))  # 100ns
+print(Timing(nanoseconds=1500))  # 1.5µs
+print(Timing(microseconds=500))  # 500.0µs
+print(Timing(milliseconds=250))  # 250.0ms
+print(Timing(seconds=5))  # 5.00s
+print(Timing(seconds=90))  # 00:01:30
+print(Timing(hours=25))  # 1d 01:00:00
+print(Timing(days=10))  # 10d 00:00:00
 
 # Negative times (for differences)
 diff = Timing(seconds=-5)
@@ -96,7 +98,7 @@ print(negative)  # -5.00s
 # Comparison
 t3 = Timing(seconds=5)
 print(t1 == t3)  # True
-print(t1 > t2)   # True
+print(t1 > t2)  # True
 print(t1 < Timing(seconds=10))  # True
 ```
 
@@ -117,7 +119,7 @@ with stopwatch:
     time.sleep(0.1)  # Simulate work
 
 print(f"Elapsed: {stopwatch.elapsed}")  # Elapsed: ~100.0ms
-print(f"Laps: {len(stopwatch)}")        # Laps: 1
+print(f"Laps: {len(stopwatch)}")  # Laps: 1
 ```
 
 ### Multiple Laps
@@ -140,11 +142,11 @@ with stopwatch:
 with stopwatch:
     time.sleep(0.075)
 
-print(f"Total elapsed: {stopwatch.elapsed}")    # ~225.0ms
-print(f"Number of laps: {len(stopwatch)}")      # 3
-print(f"Average lap: {stopwatch.average}")      # ~75.0ms
-print(f"Fastest lap: {stopwatch.min}")          # ~50.0ms
-print(f"Slowest lap: {stopwatch.max}")          # ~100.0ms
+print(f"Total elapsed: {stopwatch.elapsed}")  # ~225.0ms
+print(f"Number of laps: {len(stopwatch)}")  # 3
+print(f"Average lap: {stopwatch.average}")  # ~75.0ms
+print(f"Fastest lap: {stopwatch.min}")  # ~50.0ms
+print(f"Slowest lap: {stopwatch.max}")  # ~100.0ms
 
 # Iterate through laps
 for i, lap in enumerate(stopwatch, 1):
@@ -204,7 +206,7 @@ from typing import Callable, TypeVar
 import logging
 
 logger = logging.getLogger(__name__)
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def timed(func: Callable[..., T]) -> Callable[..., T]:
@@ -216,9 +218,7 @@ def timed(func: Callable[..., T]) -> Callable[..., T]:
         with stopwatch:
             result = func(*args, **kwargs)
 
-        logger.info(
-            f"{func.__name__} executed in {stopwatch.elapsed}"
-        )
+        logger.info(f"{func.__name__} executed in {stopwatch.elapsed}")
         return result
 
     return wrapper
@@ -229,6 +229,7 @@ def timed(func: Callable[..., T]) -> Callable[..., T]:
 def slow_function():
     """Simulate a slow operation."""
     import time
+
     time.sleep(0.5)
     return "Done"
 
@@ -262,11 +263,11 @@ def benchmark(func: Callable, iterations: int = 100) -> dict:
             func()
 
     return {
-        'total': stopwatch.elapsed,
-        'average': stopwatch.average,
-        'min': stopwatch.min,
-        'max': stopwatch.max,
-        'iterations': iterations,
+        "total": stopwatch.elapsed,
+        "average": stopwatch.average,
+        "min": stopwatch.min,
+        "max": stopwatch.max,
+        "iterations": iterations,
     }
 
 
@@ -309,6 +310,7 @@ from datetime import datetime
 @dataclass
 class APIResponse:
     """API response with timing information."""
+
     url: str
     status_code: int
     elapsed: Timing
@@ -332,7 +334,7 @@ class APIMonitor:
             url=url,
             status_code=response.status_code,
             elapsed=stopwatch.elapsed,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
         self.responses.append(api_response)
@@ -346,14 +348,14 @@ class APIMonitor:
         elapsed_times = [r.elapsed for r in self.responses]
 
         return {
-            'total_requests': len(self.responses),
-            'total_time': sum(elapsed_times),
-            'average_time': sum(elapsed_times) // len(elapsed_times),
-            'min_time': min(elapsed_times),
-            'max_time': max(elapsed_times),
-            'success_rate': sum(
-                1 for r in self.responses if r.status_code == 200
-            ) / len(self.responses) * 100,
+            "total_requests": len(self.responses),
+            "total_time": sum(elapsed_times),
+            "average_time": sum(elapsed_times) // len(elapsed_times),
+            "min_time": min(elapsed_times),
+            "max_time": max(elapsed_times),
+            "success_rate": sum(1 for r in self.responses if r.status_code == 200)
+            / len(self.responses)
+            * 100,
         }
 
 
@@ -454,13 +456,11 @@ from pyutilkit.timing import Stopwatch, Timing
 from typing import Iterable, TypeVar
 import sys
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def process_with_progress(
-    items: Iterable[T],
-    processor: Callable[[T], None],
-    batch_size: int = 100
+    items: Iterable[T], processor: Callable[[T], None], batch_size: int = 100
 ) -> Timing:
     """Process items with progress tracking and timing.
 
@@ -490,7 +490,7 @@ def process_with_progress(
                 f"Avg: {avg_time} | "
                 f"Elapsed: {stopwatch.elapsed}",
                 end="",
-                flush=True
+                flush=True,
             )
 
     print(f"\nCompleted {count} items in {stopwatch.elapsed}")
@@ -501,6 +501,7 @@ def process_with_progress(
 def process_item(item: int):
     """Simulate processing an item."""
     import time
+
     time.sleep(0.001)  # 1ms per item
 
 
@@ -520,6 +521,7 @@ from datetime import datetime
 @dataclass
 class SLARequirement:
     """Service Level Agreement requirement."""
+
     name: str
     max_response_time: Timing
     target_success_rate: float  # percentage
@@ -528,6 +530,7 @@ class SLARequirement:
 @dataclass
 class SLAResult:
     """SLA compliance result."""
+
     requirement: SLARequirement
     compliant: bool
     actual_response_time: Timing
@@ -551,7 +554,7 @@ class SLAMonitor:
                 requirement=sla,
                 compliant=False,
                 actual_response_time=Timing(),
-                actual_success_rate=0.0
+                actual_success_rate=0.0,
             )
 
         # Calculate metrics
@@ -571,7 +574,7 @@ class SLAMonitor:
             requirement=sla,
             compliant=compliant,
             actual_response_time=avg_response,
-            actual_success_rate=success_rate
+            actual_success_rate=success_rate,
         )
 
     def report(self, sla: SLARequirement) -> str:
@@ -583,7 +586,7 @@ class SLAMonitor:
 
         report = f"""
 SLA Report: {sla.name}
-{'='*50}
+{"=" * 50}
 Status: {status}
 
 Requirements:
@@ -620,7 +623,7 @@ for _ in range(100):
 sla = SLARequirement(
     name="API Response Time",
     max_response_time=Timing(milliseconds=150),
-    target_success_rate=95.0
+    target_success_rate=95.0,
 )
 
 # Check and report
@@ -630,24 +633,22 @@ print(monitor.report(sla))
 ## Common Pitfalls
 
 !!! warning "Context Manager Usage"
-    Always use `Stopwatch` as a context manager (`with stopwatch:`). Manually calling `__enter__` and `__exit__` can lead to incorrect measurements.
+Always use `Stopwatch` as a context manager (`with stopwatch:`). Manually calling `__enter__` and `__exit__` can lead to incorrect measurements.
 
 !!! warning "Division by Zero"
-    Calling `stopwatch.average` when no laps have been recorded raises `ZeroDivisionError`. Always check `len(stopwatch)` first or handle the exception.
+Calling `stopwatch.average` when no laps have been recorded raises `ZeroDivisionError`. Always check `len(stopwatch)` first or handle the exception.
 
 !!! tip "Use Appropriate Precision"
-    For most applications, millisecond precision is sufficient. Use nanosecond precision only when you need extreme accuracy (e.g., benchmarking very fast operations).
+For most applications, millisecond precision is sufficient. Use nanosecond precision only when you need extreme accuracy (e.g., benchmarking very fast operations).
 
 !!! tip "Account for Overhead"
-    The timing itself has minimal overhead, but be aware that printing or logging during measurement can affect results. Keep measurement code separate from reporting code.
+The timing itself has minimal overhead, but be aware that printing or logging during measurement can affect results. Keep measurement code separate from reporting code.
 
 ## API Reference
 
 ::: pyutilkit.timing
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: false
-      members:
-        - Timing
-        - Stopwatch
+handler: python
+options:
+show_root_heading: true
+show_source: false
+members: - Timing - Stopwatch

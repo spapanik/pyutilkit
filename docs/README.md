@@ -40,6 +40,7 @@ from pyutilkit.term import SGRString, SGRCodes
 
 # Get current time in any timezone
 from zoneinfo import ZoneInfo
+
 tokyo_time = now(ZoneInfo("Asia/Tokyo"))
 print(f"Current time in Tokyo: {tokyo_time}")
 
@@ -71,12 +72,12 @@ success.print()
 
 - **[Installation Guide](installation.md)** - Setup instructions and requirements
 - **[Usage Guide](usage/index.md)** - Comprehensive examples and tutorials for all modules
-  - [Classes](usage/classes.md) - Singleton pattern implementation
-  - [Date Utilities](usage/date_utils.md) - Timezone-aware datetime operations
-  - [File Utilities](usage/files.md) - Exception handling and file hashing
-  - [Subprocess](usage/subprocess.md) - Enhanced command execution
-  - [Terminal](usage/term.md) - Terminal formatting and colors
-  - [Timing](usage/timing.md) - Performance measurement and benchmarking
+    - [Classes](usage/classes.md) - Singleton pattern implementation
+    - [Date Utilities](usage/date_utils.md) - Timezone-aware datetime operations
+    - [File Utilities](usage/files.md) - Exception handling and file hashing
+    - [Subprocess](usage/subprocess.md) - Enhanced command execution
+    - [Terminal](usage/term.md) - Terminal formatting and colors
+    - [Timing](usage/timing.md) - Performance measurement and benchmarking
 - **[Changelog](CHANGELOG.md)** - Version history and changes
 - **[Code of Conduct](CODE_OF_CONDUCT.md)** - Community guidelines
 

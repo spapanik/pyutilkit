@@ -5,12 +5,14 @@ The `term` module provides powerful terminal formatting capabilities with ANSI/S
 ## Overview
 
 Terminal formatting can be complex due to:
+
 - Different terminal capabilities
 - Piped vs interactive output
 - Cross-platform compatibility
 - Complex ANSI escape sequences
 
 The `term` module simplifies this by providing:
+
 - Easy-to-use color and style constants
 - Automatic TTY detection (strips colors when not in a terminal)
 - Smart printing to stdout/stderr
@@ -29,19 +31,11 @@ message = SGRString("Hello, World!", params=[SGRCodes.BOLD])
 print(message)  # Bold text in terminal, plain text when piped
 
 # Multiple styles
-error_msg = SGRString(
-    "Error: File not found",
-    params=[SGRCodes.BOLD, SGRCodes.RED]
-)
+error_msg = SGRString("Error: File not found", params=[SGRCodes.BOLD, SGRCodes.RED])
 error_msg.print()  # Prints to stderr (if is_error=True) or stdout
 
 # With prefix and suffix
-item = SGRString(
-    "✓ Success",
-    prefix="[APP] ",
-    suffix="\n",
-    params=[SGRCodes.GREEN]
-)
+item = SGRString("✓ Success", prefix="[APP] ", suffix="\n", params=[SGRCodes.GREEN])
 item.print()  # [APP] ✓ Success
 ```
 
@@ -115,18 +109,22 @@ print(len(text))  # 5 (not including escape sequences)
 from pyutilkit.term import SGRString, SGROutput, SGRCodes
 
 # Combine multiple styled strings
-output = SGROutput([
-    SGRString("Status:", params=[SGRCodes.BOLD]),
-    SGRString(" OK", params=[SGRCodes.GREEN]),
-])
+output = SGROutput(
+    [
+        SGRString("Status:", params=[SGRCodes.BOLD]),
+        SGRString(" OK", params=[SGRCodes.GREEN]),
+    ]
+)
 output.print(sep="")  # Status: OK
 
 # With separator
-items = SGROutput([
-    SGRString("apple", params=[SGRCodes.RED]),
-    SGRString("banana", params=[SGRCodes.YELLOW]),
-    SGRString("cherry", params=[SGRCodes.MAGENTA]),
-])
+items = SGROutput(
+    [
+        SGRString("apple", params=[SGRCodes.RED]),
+        SGRString("banana", params=[SGRCodes.YELLOW]),
+        SGRString("cherry", params=[SGRCodes.MAGENTA]),
+    ]
+)
 items.print(sep=", ")  # apple, banana, cherry
 ```
 
@@ -141,9 +139,7 @@ info.print()
 
 # Error message (prints to stderr)
 error = SGRString(
-    "Failed to connect",
-    params=[SGRCodes.BOLD, SGRCodes.RED],
-    is_error=True
+    "Failed to connect", params=[SGRCodes.BOLD, SGRCodes.RED], is_error=True
 )
 error.print()
 ```
@@ -154,10 +150,7 @@ error.print()
 from pyutilkit.term import SGRString, SGRCodes
 
 # Create a centered header
-title = SGRString(
-    "Application Started",
-    params=[SGRCodes.BOLD, SGRCodes.CYAN]
-)
+title = SGRString("Application Started", params=[SGRCodes.BOLD, SGRCodes.CYAN])
 title.header()  # Centers text based on terminal width
 
 # Custom padding
@@ -211,22 +204,13 @@ class ProgressBar:
         empty = self.width - filled
 
         # Build progress bar
-        bar = SGRString(
-            "█" * filled + "░" * empty,
-            params=[SGRCodes.GREEN]
-        )
+        bar = SGRString("█" * filled + "░" * empty, params=[SGRCodes.GREEN])
 
         # Build percentage text
-        pct_text = SGRString(
-            f"{percentage * 100:5.1f}%",
-            params=[SGRCodes.BOLD]
-        )
+        pct_text = SGRString(f"{percentage * 100:5.1f}%", params=[SGRCodes.BOLD])
 
         # Combine and print
-        output = SGRString(
-            f"\r[{bar}] {pct_text}",
-            params=[]
-        )
+        output = SGRString(f"\r[{bar}] {pct_text}", params=[])
         output.print(end="")
         sys.stdout.flush()
 
@@ -271,22 +255,13 @@ class ColorFormatter(logging.Formatter):
 
         # Format timestamp
         timestamp = datetime.fromtimestamp(record.created)
-        ts_str = SGRString(
-            timestamp.strftime("%H:%M:%S"),
-            params=[SGRCodes.GREY]
-        )
+        ts_str = SGRString(timestamp.strftime("%H:%M:%S"), params=[SGRCodes.GREY])
 
         # Format level
-        level_str = SGRString(
-            record.levelname.ljust(8),
-            params=[color, SGRCodes.BOLD]
-        )
+        level_str = SGRString(record.levelname.ljust(8), params=[color, SGRCodes.BOLD])
 
         # Format message
-        msg_str = SGRString(
-            record.getMessage(),
-            params=[]
-        )
+        msg_str = SGRString(record.getMessage(), params=[])
 
         # Combine
         output = SGROutput([ts_str, level_str, msg_str])
@@ -338,8 +313,7 @@ class TableFormatter:
         header_cells = []
         for i, header in enumerate(self.headers):
             cell = SGRString(
-                header.ljust(self.col_widths[i]),
-                params=[SGRCodes.BOLD, SGRCodes.CYAN]
+                header.ljust(self.col_widths[i]), params=[SGRCodes.BOLD, SGRCodes.CYAN]
             )
             header_cells.append(cell)
 
@@ -355,10 +329,7 @@ class TableFormatter:
             cells = []
             for i, value in enumerate(row):
                 if i < len(self.col_widths):
-                    cell = SGRString(
-                        str(value).ljust(self.col_widths[i]),
-                        params=[]
-                    )
+                    cell = SGRString(str(value).ljust(self.col_widths[i]), params=[])
                     cells.append(cell)
 
             row_output = SGROutput(cells)
@@ -407,10 +378,7 @@ class Menu:
             print("\n" * 2)
 
             # Display title
-            title = SGRString(
-                self.title,
-                params=[SGRCodes.BOLD, SGRCodes.CYAN]
-            )
+            title = SGRString(self.title, params=[SGRCodes.BOLD, SGRCodes.CYAN])
             title.header(padding="═")
 
             print()
@@ -444,16 +412,12 @@ class Menu:
                     action()
                 else:
                     error = SGRString(
-                        "Invalid option. Try again.",
-                        params=[SGRCodes.RED]
+                        "Invalid option. Try again.", params=[SGRCodes.RED]
                     )
                     error.print()
 
             except ValueError:
-                error = SGRString(
-                    "Please enter a number.",
-                    params=[SGRCodes.RED]
-                )
+                error = SGRString("Please enter a number.", params=[SGRCodes.RED])
                 error.print()
             except KeyboardInterrupt:
                 print("\n\nGoodbye!")
@@ -506,8 +470,7 @@ class StatusDashboard:
         """Display dashboard."""
         # Title
         title = SGRString(
-            "System Status Dashboard",
-            params=[SGRCodes.BOLD, SGRCodes.CYAN]
+            "System Status Dashboard", params=[SGRCodes.BOLD, SGRCodes.CYAN]
         )
         title.header(padding="═")
         print()
@@ -525,7 +488,7 @@ class StatusDashboard:
             label = self.label(name.ljust(15))
             status = SGRString(
                 "Running" if is_running else "Stopped",
-                params=[SGRCodes.GREEN if is_running else SGRCodes.RED]
+                params=[SGRCodes.GREEN if is_running else SGRCodes.RED],
             )
 
             output = SGROutput([indicator, label, status])
@@ -534,10 +497,7 @@ class StatusDashboard:
         print()
 
         # Metrics
-        metrics_label = SGRString(
-            "Metrics:",
-            params=[SGRCodes.BOLD, SGRCodes.YELLOW]
-        )
+        metrics_label = SGRString("Metrics:", params=[SGRCodes.BOLD, SGRCodes.YELLOW])
         metrics_label.print()
 
         cpu = SGRString("CPU: 45%", params=[])
@@ -556,25 +516,22 @@ dashboard.display()
 ## Common Pitfalls
 
 !!! warning "TTY Detection"
-    When piping output to a file or another command, ANSI codes are automatically stripped. This is usually desired behavior, but you can override it with `PY_UTIL_FORCE_SGR=1`.
+When piping output to a file or another command, ANSI codes are automatically stripped. This is usually desired behavior, but you can override it with `PY_UTIL_FORCE_SGR=1`.
 
 !!! warning "Windows Compatibility"
-    Older Windows terminals may not support ANSI codes. Modern Windows 10+ terminals do support them. Consider using libraries like `colorama` for broader Windows compatibility if needed.
+Older Windows terminals may not support ANSI codes. Modern Windows 10+ terminals do support them. Consider using libraries like `colorama` for broader Windows compatibility if needed.
 
 !!! tip "Use Bright Colors for Better Visibility"
-    Standard colors can be hard to read on some terminals. Use bright variants (`RED_BRIGHT`, `GREEN_BRIGHT`, etc.) for better visibility.
+Standard colors can be hard to read on some terminals. Use bright variants (`RED_BRIGHT`, `GREEN_BRIGHT`, etc.) for better visibility.
 
 !!! tip "Test with Piped Output"
-    Always test your CLI tools with piped output (`command | cat`) to ensure they work correctly when colors are stripped.
+Always test your CLI tools with piped output (`command | cat`) to ensure they work correctly when colors are stripped.
 
 ## API Reference
 
 ::: pyutilkit.term
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: false
-      members:
-        - SGRCodes
-        - SGRString
-        - SGROutput
+handler: python
+options:
+show_root_heading: true
+show_source: false
+members: - SGRCodes - SGRString - SGROutput
