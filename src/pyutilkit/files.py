@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 INGEST_ERROR = "Function `%s` threw `%s` when called with args=%s and kwargs=%s"
+INGEST_ERROR_WITHOUT_ARGS = "Function `%s` threw `%s`"
 R_co = TypeVar("R_co", covariant=True)
 P = ParamSpec("P")
 LogLevel = Literal["debug", "info", "warning", "error", "critical", "exception"]
@@ -30,6 +31,7 @@ def handle_exceptions(
     exceptions: tuple[type[Exception], ...] = (Exception,),
     default: R_co | None = None,
     log_level: LogLevel = "info",
+    log_args: bool = True,
 ) -> Callable[[Callable[P, R_co]], Callable[P, R_co | None]]:
     log = getattr(logger, _validate_log_level(log_level))
 
@@ -39,14 +41,22 @@ def handle_exceptions(
             try:
                 return func(*args, **kwargs)
             except exceptions as exc:
-                log(
-                    INGEST_ERROR,
-                    func.__name__,  # ty: ignore[unresolved-attribute]
-                    exc.__class__.__name__,
-                    args,
-                    kwargs,
-                    exc_info=True,
+                log_values = (
+                    (
+                        INGEST_ERROR,
+                        func.__name__,  # ty: ignore[unresolved-attribute]
+                        exc.__class__.__name__,
+                        args,
+                        kwargs,
+                    )
+                    if log_args
+                    else (
+                        INGEST_ERROR_WITHOUT_ARGS,
+                        func.__name__,  # ty: ignore[unresolved-attribute]
+                        exc.__class__.__name__,
+                    )
                 )
+                log(*log_values, exc_info=True)
                 return default
 
         return wrapper

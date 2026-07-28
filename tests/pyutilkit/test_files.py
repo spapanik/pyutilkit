@@ -64,6 +64,39 @@ def test_handle_exceptions_logs_at_requested_level(
     assert record.message.startswith("Function `fail` threw `RuntimeError`")
 
 
+def test_handle_exceptions_logs_arguments_by_default(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    @handle_exceptions(exceptions=(ValueError,))
+    def authenticate(user: str, *, api_key: str) -> None:
+        if user and api_key:
+            raise ValueError
+
+    with caplog.at_level(logging.INFO, logger="pyutilkit.files"):
+        authenticate("alice", api_key="secret")
+
+    assert "args=('alice',)" in caplog.text
+    assert "kwargs={'api_key': 'secret'}" in caplog.text
+
+
+def test_handle_exceptions_can_suppress_arguments(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    @handle_exceptions(exceptions=(ValueError,), log_args=False)
+    def authenticate(user: str, *, api_key: str) -> None:
+        if user and api_key:
+            raise ValueError
+
+    with caplog.at_level(logging.INFO, logger="pyutilkit.files"):
+        authenticate("alice", api_key="secret")
+
+    record = caplog.records[0]
+    assert record.message == "Function `authenticate` threw `ValueError`"
+    assert record.exc_info is not None
+    assert "alice" not in caplog.text
+    assert "secret" not in caplog.text
+
+
 def test_hash_file() -> None:
     dev_null_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     assert hash_file(Path(os.devnull)) == dev_null_hash

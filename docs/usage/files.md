@@ -90,6 +90,24 @@ Supported values are `debug`, `info`, `warning`, `error`, `critical`, and
 `exception`. Invalid values raise `ValueError` immediately when the decorator
 is applied, rather than masking a later exception from the wrapped function.
 
+### Sensitive Arguments
+
+By default, `handle_exceptions` logs every positional and keyword argument when
+the wrapped function fails. Do not use that default for functions that accept
+credentials, tokens, personal data, or other sensitive values. Set
+`log_args=False` to omit all arguments while retaining the function name,
+exception type, selected log level, and traceback:
+
+```python
+from pyutilkit.files import handle_exceptions
+
+
+@handle_exceptions(exceptions=(ValueError,), log_level="error", log_args=False)
+def authenticate(user: str, api_key: str) -> None: ...
+```
+
+Argument logging remains enabled by default for backward compatibility.
+
 ## Real-World Examples
 
 ### Data Pipeline Error Handling

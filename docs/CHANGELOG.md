@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Added
+
+- `handle_exceptions` now accepts `log_args=False` to keep function arguments
+  out of exception logs while retaining the function name, exception type, and
+  traceback.
+
 ### Fixed
 
 - Explicit `force_sgr=False` and `force_prefix=False` arguments now override
