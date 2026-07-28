@@ -84,18 +84,17 @@ class SGRString:
         prefix: str = "",
         suffix: str = "",
         params: Iterable[SGRCodes] = (),
-        force_prefix: bool = False,
-        force_sgr: bool = False,
+        force_prefix: bool | None = None,
+        force_sgr: bool | None = None,
         is_error: bool = False,
     ) -> None:
         params = tuple(params)
-        force_prefix = (
-            force_prefix
-            or os.getenv("PY_UTIL_FORCE_PREFIX", "").lower() in TRUTHY_VALUES
-        )
-        force_sgr = (
-            force_sgr or os.getenv("PY_UTIL_FORCE_SGR", "").lower() in TRUTHY_VALUES
-        )
+        if force_prefix is None:
+            force_prefix = (
+                os.getenv("PY_UTIL_FORCE_PREFIX", "").lower() in TRUTHY_VALUES
+            )
+        if force_sgr is None:
+            force_sgr = os.getenv("PY_UTIL_FORCE_SGR", "").lower() in TRUTHY_VALUES
 
         object.__setattr__(self, "_prefix", prefix)
         object.__setattr__(self, "_string", str(obj))

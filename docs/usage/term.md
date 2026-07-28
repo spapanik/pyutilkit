@@ -211,7 +211,10 @@ tagged.print()  # Always includes [TAG] prefix
 
 Environment overrides are read when each `SGRString` is constructed; changing
 an environment variable does not alter an existing instance. Accepted truthy
-values are `1`, `true`, and `yes`, case-insensitively.
+values are `1`, `true`, and `yes`, case-insensitively. An explicit
+`force_sgr` or `force_prefix` argument takes precedence over the corresponding
+environment variable in both directions: `True` enables the output and `False`
+disables it. Omit the argument to inherit the environment setting.
 
 ## Real-World Examples
 

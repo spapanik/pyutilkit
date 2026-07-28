@@ -300,3 +300,35 @@ def test_force_prefix_constructor_overrides_env(
     sgr_string.print()
     captured = capsys.readouterr()
     assert captured.out == "x*x\n"
+
+
+@pytest.mark.parametrize("use_output", [False, True])
+def test_force_sgr_constructor_can_disable_env(
+    use_output: bool,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: mock.MagicMock,
+) -> None:
+    monkeypatch.setenv("PY_UTIL_FORCE_SGR", "1")
+    string = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED])
+    output = SGROutput([string], force_sgr=False) if use_output else string
+    if not use_output:
+        output = SGRString("*", params=[SGRCodes.BOLD, SGRCodes.RED], force_sgr=False)
+    output.print()
+    captured = capsys.readouterr()
+    assert captured.out == "*\n"
+
+
+@pytest.mark.parametrize("use_output", [False, True])
+def test_force_prefix_constructor_can_disable_env(
+    use_output: bool,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: mock.MagicMock,
+) -> None:
+    monkeypatch.setenv("PY_UTIL_FORCE_PREFIX", "1")
+    string = SGRString("*", prefix="x", suffix="x")
+    output = SGROutput([string], force_prefix=False) if use_output else string
+    if not use_output:
+        output = SGRString("*", prefix="x", suffix="x", force_prefix=False)
+    output.print()
+    captured = capsys.readouterr()
+    assert captured.out == "*\n"

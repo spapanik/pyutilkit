@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+### Fixed
+
+- Explicit `force_sgr=False` and `force_prefix=False` arguments now override
+  truthy terminal environment settings, allowing callers to disable forced
+  formatting.
+
 ## [0.12.0] - 2026-07-25
 
 ### Added
