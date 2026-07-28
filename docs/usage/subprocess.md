@@ -129,6 +129,11 @@ Live streaming requires the current parent text stream to expose a binary
 in that case live echo is skipped for the affected stream, while
 `ProcessOutput.stdout` and `.stderr` still capture all bytes.
 
+If live echo fails, `run_command` still drains and closes both child pipes and
+waits for the process before raising the original stream error. When both
+stdout and stderr echo fail, the first error is raised and the other is
+available through its `__cause__` chain.
+
 ## Real-World Examples
 
 ### Build Script Runner

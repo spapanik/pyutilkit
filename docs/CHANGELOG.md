@@ -26,6 +26,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
   of corrupting its state and later failing with `AttributeError`.
 - Printing an empty `SGROutput` now emits its line terminator, matching builtin
   `print()` behavior.
+- `run_command` now preserves every stdout and stderr echo failure in the
+  raised exception's cause chain instead of silently discarding all but one.
 
 ## [0.12.0] - 2026-07-25
 

@@ -187,3 +187,30 @@ def test_run_command_captures_without_binary_parent_streams() -> None:
     assert output.stderr == b"error\n"
     assert redirected_stdout.getvalue() == ""
     assert redirected_stderr.getvalue() == ""
+
+
+def test_run_command_chains_both_stream_echo_errors(tmp_path: Path) -> None:
+    completion_marker = tmp_path / "both-streams-complete"
+    child_code = (
+        "import pathlib, sys, time; "
+        "print('stdout failed', flush=True); "
+        "print('stderr failed', file=sys.stderr, flush=True); "
+        "time.sleep(0.2); "
+        f"pathlib.Path({str(completion_marker)!r}).write_text('done')"
+    )
+
+    def fail_echo(stream: object, line: bytes) -> None:
+        del stream
+        raise BrokenPipeError(line.decode().strip())
+
+    with (
+        mock.patch.object(subprocess_module, "_write_output", fail_echo),
+        pytest.raises(BrokenPipeError) as exc_info,
+    ):
+        run_command([sys.executable, "-c", child_code])
+
+    cause = exc_info.value.__cause__
+    assert cause is not None
+    assert {str(exc_info.value), str(cause)} == {"stdout failed", "stderr failed"}
+    assert cause.__cause__ is None
+    assert completion_marker.read_text() == "done"

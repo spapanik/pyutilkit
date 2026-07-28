@@ -92,7 +92,13 @@ def run_command(
             reader.join()
 
     if not errors.empty():
-        raise errors.get()
+        error = errors.get()
+        current_error = error
+        while not errors.empty():
+            next_error = errors.get()
+            current_error.__cause__ = next_error
+            current_error = next_error
+        raise error
 
     return ProcessOutput(
         stdout=b"".join(stdout),
