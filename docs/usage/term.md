@@ -138,6 +138,10 @@ items = SGROutput(
 items.print(sep=", ")  # apple, banana, cherry
 ```
 
+Like the builtin `print()`, `SGROutput([]).print()` writes its `end` value even
+though it has no content strings. In contrast, `SGROutput([]).header()` raises
+`ValueError` because header formatting requires exactly one string to center.
+
 ### Error vs Regular Output
 
 ```python

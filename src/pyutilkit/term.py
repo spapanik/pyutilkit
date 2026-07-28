@@ -270,6 +270,10 @@ class SGROutput:
 
     def print(self, sep: str = "", end: str = "\n") -> None:
         n = len(self._strings)
+        if n == 0:
+            sys.stdout.write(end)
+            return
+
         for index, string in enumerate(self._strings, start=1):
             current_end = end if index == n else sep
             string.print(end=current_end)

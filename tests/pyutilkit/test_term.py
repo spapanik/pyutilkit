@@ -212,6 +212,13 @@ def test_sgr_output_print_objects(capsys: mock.MagicMock) -> None:
     assert captured.err == ""
 
 
+def test_sgr_output_print_empty(capsys: mock.MagicMock) -> None:
+    SGROutput([]).print()
+    captured = capsys.readouterr()
+    assert captured.out == "\n"
+    assert captured.err == ""
+
+
 @pytest.mark.parametrize(
     "env_value",
     ["1", "true", "yes", "TRUE", "True", "YES"],

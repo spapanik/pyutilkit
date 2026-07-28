@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
   the empty-input digest or reading the entire file into memory.
 - Re-entering a running `Stopwatch` now raises a clear `RuntimeError` instead
   of corrupting its state and later failing with `AttributeError`.
+- Printing an empty `SGROutput` now emits its line terminator, matching builtin
+  `print()` behavior.
 
 ## [0.12.0] - 2026-07-25
 
