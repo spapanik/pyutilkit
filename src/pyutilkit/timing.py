@@ -124,6 +124,12 @@ class Timing:
 
 
 class Stopwatch:
+    """Track sequential laps for a single caller.
+
+    A stopwatch cannot be re-entered or shared concurrently between threads.
+    Use a separate instance for each nesting level or thread.
+    """
+
     _start: int
     laps: list[Timing]
     __slots__ = ("_start", "_zero", "laps")
@@ -133,6 +139,9 @@ class Stopwatch:
         self._zero = Timing()
 
     def __enter__(self) -> Self:
+        if hasattr(self, "_start"):
+            msg = "Stopwatch is already running; use a separate instance"
+            raise RuntimeError(msg)
         self._start = perf_counter_ns()
         return self
 

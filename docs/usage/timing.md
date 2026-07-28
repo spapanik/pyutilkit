@@ -153,6 +153,16 @@ for i, lap in enumerate(stopwatch, 1):
     print(f"Lap {i}: {lap}")
 ```
 
+A `Stopwatch` tracks sequential laps and cannot be nested with itself or shared
+concurrently between threads. Re-entering a running instance raises
+`RuntimeError`. Use a distinct stopwatch for every nesting level or thread:
+
+```python
+with Stopwatch() as outer:
+    with Stopwatch() as inner:
+        pass
+```
+
 ### Resetting Stopwatch
 
 ```python

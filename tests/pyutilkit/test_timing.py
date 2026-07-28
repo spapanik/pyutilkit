@@ -192,3 +192,19 @@ def test_stopwatch() -> None:
     stopwatch.reset()
     assert len(stopwatch) == 0
     assert not stopwatch
+
+
+def test_stopwatch_rejects_reentry() -> None:
+    stopwatch = Stopwatch()
+
+    def enter_twice() -> None:
+        with stopwatch, stopwatch:
+            pass
+
+    with pytest.raises(RuntimeError, match="Stopwatch is already running"):
+        enter_twice()
+
+    assert len(stopwatch) == 1
+    with stopwatch:
+        pass
+    assert len(stopwatch) == 2

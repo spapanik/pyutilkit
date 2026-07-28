@@ -22,6 +22,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
   echo is skipped for that stream.
 - `hash_file` now rejects zero and negative buffer sizes instead of returning
   the empty-input digest or reading the entire file into memory.
+- Re-entering a running `Stopwatch` now raises a clear `RuntimeError` instead
+  of corrupting its state and later failing with `AttributeError`.
 
 ## [0.12.0] - 2026-07-25
 
