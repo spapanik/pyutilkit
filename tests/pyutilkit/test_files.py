@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import os
 from pathlib import Path
@@ -109,3 +110,20 @@ def test_hash_file_with_update(tmp_path: Path) -> None:
         "dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f"
     )
     assert hash_file(tmp_file, buffer_size=1) == hello_world_hash
+
+
+@pytest.mark.parametrize("buffer_size", [0, -1])
+def test_hash_file_rejects_non_positive_buffer_size(
+    buffer_size: int,
+    tmp_path: Path,
+) -> None:
+    content = b"important content that must be hashed"
+    tmp_file = tmp_path / "important.txt"
+    tmp_file.write_bytes(content)
+
+    with pytest.raises(ValueError, match="buffer_size must be at least 1"):
+        hash_file(tmp_file, buffer_size=buffer_size)
+
+    expected = hashlib.sha256(content).hexdigest()
+    assert expected != hashlib.sha256().hexdigest()
+    assert hash_file(tmp_file, buffer_size=1) == expected

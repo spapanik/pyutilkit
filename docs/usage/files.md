@@ -278,6 +278,10 @@ print(file_hash)
 large_file_hash = hash_file(Path("/path/to/large.iso"), buffer_size=2**20)  # 1MB buffer
 ```
 
+`buffer_size` must be at least `1`. Zero and negative sizes raise `ValueError`;
+negative values are not treated as a request to read the entire file because
+`hash_file` is intended to stream its input.
+
 ### Real-World Examples
 
 #### File Integrity Verification

@@ -65,6 +65,10 @@ def handle_exceptions(
 
 
 def hash_file(path: Path, buffer_size: int = 2**16) -> str:
+    if buffer_size < 1:
+        msg = "buffer_size must be at least 1"
+        raise ValueError(msg)
+
     sha256 = hashlib.sha256()
 
     with path.open("rb") as f:

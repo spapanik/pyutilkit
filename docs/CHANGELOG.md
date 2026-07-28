@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - `run_command` no longer crashes when stdout or stderr is redirected to a
   text-only stream without a binary buffer; output remains captured while live
   echo is skipped for that stream.
+- `hash_file` now rejects zero and negative buffer sizes instead of returning
+  the empty-input digest or reading the entire file into memory.
 
 ## [0.12.0] - 2026-07-25
 
