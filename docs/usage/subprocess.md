@@ -124,6 +124,11 @@ print(f"\nCaptured {len(result.stdout)} bytes of stdout")
 print(f"Command took {result.elapsed}")
 ```
 
+Live streaming requires the current parent text stream to expose a binary
+`.buffer`. Redirected text-only streams such as `io.StringIO` are supported:
+in that case live echo is skipped for the affected stream, while
+`ProcessOutput.stdout` and `.stderr` still capture all bytes.
+
 ## Real-World Examples
 
 ### Build Script Runner

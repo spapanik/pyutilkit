@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import os
 import subprocess
 import sys
@@ -162,3 +164,26 @@ def test_run_command_reaps_process_before_propagating_echo_error(
         run_command([sys.executable, "-c", child_code])
 
     assert completion_marker.read_text() == "done"
+
+
+def test_run_command_captures_without_binary_parent_streams() -> None:
+    command = [
+        sys.executable,
+        "-c",
+        (
+            "import sys; "
+            "sys.stdout.buffer.write(b'output\\n'); "
+            "sys.stderr.buffer.write(b'error\\n')"
+        ),
+    ]
+
+    with (
+        contextlib.redirect_stdout(io.StringIO()) as redirected_stdout,
+        contextlib.redirect_stderr(io.StringIO()) as redirected_stderr,
+    ):
+        output = run_command(command)
+
+    assert output.stdout == b"output\n"
+    assert output.stderr == b"error\n"
+    assert redirected_stdout.getvalue() == ""
+    assert redirected_stderr.getvalue() == ""

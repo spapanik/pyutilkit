@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 - Explicit `force_sgr=False` and `force_prefix=False` arguments now override
   truthy terminal environment settings, allowing callers to disable forced
   formatting.
+- `run_command` no longer crashes when stdout or stderr is redirected to a
+  text-only stream without a binary buffer; output remains captured while live
+  echo is skipped for that stream.
 
 ## [0.12.0] - 2026-07-25
 

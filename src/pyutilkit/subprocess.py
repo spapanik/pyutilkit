@@ -30,11 +30,11 @@ def _write_output(stream: BinaryIO, line: bytes) -> None:
 
 def _drain_pipe(
     pipe: BinaryIO,
-    output: BinaryIO,
+    output: BinaryIO | None,
     captured: list[bytes],
     errors: SimpleQueue[Exception],
 ) -> None:
-    echo = True
+    echo = output is not None
     for line in pipe:
         captured.append(line)
         if not echo:
@@ -75,12 +75,12 @@ def run_command(
         readers = (
             Thread(
                 target=_drain_pipe,
-                args=(stdout_pipe, sys.stdout.buffer, stdout, errors),
+                args=(stdout_pipe, getattr(sys.stdout, "buffer", None), stdout, errors),
                 name=f"pyutilkit-stdout-{process.pid}",
             ),
             Thread(
                 target=_drain_pipe,
-                args=(stderr_pipe, sys.stderr.buffer, stderr, errors),
+                args=(stderr_pipe, getattr(sys.stderr, "buffer", None), stderr, errors),
                 name=f"pyutilkit-stderr-{process.pid}",
             ),
         )
