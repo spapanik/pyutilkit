@@ -4,7 +4,7 @@ This guide covers different ways to install pyutilkit and verify your setup.
 
 ## Prerequisites
 
-- **Python 3.10 or higher** - pyutilkit requires modern Python features
+- **Python 3.11 or higher** - pyutilkit requires modern Python features
 - **pip** or **[uv]** (recommended) for package installation
 
 Check your Python version:
@@ -239,7 +239,7 @@ If you see errors about Python version:
 # Check your Python version
 python3 --version
 
-# If it's below 3.10, install a newer version
+# If it's below 3.11, install a newer version
 # Visit https://www.python.org/downloads/
 ```
 

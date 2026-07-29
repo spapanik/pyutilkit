@@ -5,12 +5,10 @@ import sys
 from dataclasses import dataclass
 from enum import IntEnum, unique
 from math import ceil, floor
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-
-    from typing_extensions import Self  # upgrade: py3.10: import from typing
 
 TRUTHY_VALUES = {"1", "true", "yes"}
 

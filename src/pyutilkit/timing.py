@@ -3,13 +3,11 @@ from __future__ import annotations
 import warnings
 from dataclasses import dataclass
 from time import perf_counter_ns
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from types import TracebackType
-
-    from typing_extensions import Self  # upgrade: py3.10: import from typing
 
 METRIC_MULTIPLIER = 1_000
 SECONDS_PER_MINUTE = 60

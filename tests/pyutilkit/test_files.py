@@ -68,7 +68,7 @@ def test_handle_exceptions_logs_at_requested_level(
 def test_handle_exceptions_logs_arguments_by_default(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    @handle_exceptions(exceptions=(ValueError,))
+    @handle_exceptions(exceptions=(ValueError,))  # type: ignore[arg-type]
     def authenticate(user: str, *, api_key: str) -> None:
         if user and api_key:
             raise ValueError
@@ -83,7 +83,7 @@ def test_handle_exceptions_logs_arguments_by_default(
 def test_handle_exceptions_can_suppress_arguments(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    @handle_exceptions(exceptions=(ValueError,), log_args=False)
+    @handle_exceptions(exceptions=(ValueError,), log_args=False)  # type: ignore[arg-type]
     def authenticate(user: str, *, api_key: str) -> None:
         if user and api_key:
             raise ValueError

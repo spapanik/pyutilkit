@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
   out of exception logs while retaining the function name, exception type, and
   traceback.
 
+### Changed
+
+- Dropped support for python 3.10
+
 ### Fixed
 
 - Explicit `force_sgr=False` and `force_prefix=False` arguments now override

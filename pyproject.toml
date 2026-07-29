@@ -25,7 +25,7 @@ classifiers = [
     "Intended Audience :: Developers",
 ]
 
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "tzdata; os_name == 'nt'",
 ]
@@ -48,7 +48,6 @@ lint = [
     "mypy~=2.1",                     # Keep mypy for CI/CD
     "ruff~=0.16",
     "ty~=0.0.63",
-    "typing-extensions~=4.16",       # upgrade: py3.10: use typing module
     { include-group = "test_core" },
 ]
 test = [
@@ -101,7 +100,7 @@ disallow_any_decorated = false # mock.MagicMock is Any
 src = [
     "src",
 ]
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [

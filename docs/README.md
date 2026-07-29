@@ -83,7 +83,7 @@ success.print()
 
 ## Requirements
 
-- Python 3.10 or higher
+- Python 3.11 or higher
 - No external dependencies (tzdata is automatically installed on Windows)
 
 ## Links
