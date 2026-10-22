@@ -40,7 +40,7 @@ def _drain_pipe(
         if not echo:
             continue
         try:
-            _write_output(output, line)  # type: ignore[arg-type]
+            _write_output(output, line)  # type: ignore[arg-type]  # ty: ignore[invalid-argument-type]
         except Exception as exc:  # noqa: BLE001
             errors.put(exc)
             echo = False

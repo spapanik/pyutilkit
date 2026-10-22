@@ -10,7 +10,7 @@ from pyutilkit.files import LogLevel, handle_exceptions, hash_file
 
 
 def test_handle_exceptions_handled_exception() -> None:
-    @handle_exceptions(exceptions=(ZeroDivisionError,), default=0.0)  # ty: ignore[invalid-argument-type]
+    @handle_exceptions(exceptions=(ZeroDivisionError,), default=0.0)
     def invert(n: int) -> float:
         return 1 / n
 
@@ -19,7 +19,7 @@ def test_handle_exceptions_handled_exception() -> None:
 
 
 def test_handle_exceptions_unhandled_exception() -> None:
-    @handle_exceptions(exceptions=(TypeError,), default=0.0)  # ty: ignore[invalid-argument-type]
+    @handle_exceptions(exceptions=(TypeError,), default=0.0)
     def invert(n: int) -> float:
         return 1 / n
 
@@ -44,7 +44,7 @@ def test_handle_exceptions_logs_at_requested_level(
 ) -> None:
     fallback: str = "fallback"
 
-    @handle_exceptions(  # ty: ignore[invalid-argument-type]
+    @handle_exceptions(
         exceptions=(RuntimeError,),
         default=fallback,
         log_level="error",
@@ -61,7 +61,7 @@ def test_handle_exceptions_logs_at_requested_level(
     record = caplog.records[0]
     assert record.levelno == logging.ERROR
     assert record.exc_info is not None
-    assert record.exc_info[0] is RuntimeError
+    assert record.exc_info[0] is RuntimeError  # ty: ignore[not-subscriptable]
     assert record.message.startswith("Function `fail` threw `RuntimeError`")
 
 
